@@ -1,45 +1,53 @@
+import { useState } from "react";
 import Navbar from "./features/shared/components/Navbar";
 import ThemeProvider from "./features/shared/components/ThemeProvider";
 import { Toaster } from "./features/shared/components/ui/Toaster";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { httpBatchLink } from "@trpc/client";
+import { env } from "./lib/utils/env";
+import { trpc } from "./lib/utils/trpc";
 
 export function App() {
+  const [queryClient] = useState(() => new QueryClient());
+  const [trpcClient] = useState(() =>
+    trpc.createClient({
+      links: [
+        httpBatchLink({
+          url: env.VITE_SERVER_BASE_URL,
+        }),
+      ],
+    }),
+  );
+
   return (
-    <>
-      <ThemeProvider defaultTheme="system" storageKey="hangspot-theme">
-        <Toaster />
-        <div className="flex justify-center gap-8 pb-8">
-          <Navbar />
-          <div className="min-h-screen w-full max-w-2xl">
-            <header className="mb-4 border-b border-neutral-200 p-4 dark:border-neutral-800">
-              <h1 className="text-center text-xl font-bold">
-                Advanced Patterns React
-              </h1>
-              <p className="text-center text-sm text-neutral-500">
-                <b>
-                  <span className="dark:text-primary-500">Cosden</span>{" "}
-                  Solutions
-                </b>
-              </p>
-            </header>
-            <div className="space-y-4 p-4">
-              <img
-                src="/500w-logo.png"
-                alt="logo"
-                className="mx-auto h-24 w-24"
-              />
-              <div className="space-y-2">
-                <h1 className="text-center text-2xl font-semibold">
-                  Welcome to the course!
+    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider defaultTheme="system" storageKey="hangspot-theme">
+          <Toaster />
+          <div className="flex justify-center gap-8 pb-8">
+            <Navbar />
+            <div className="min-h-screen w-full max-w-2xl">
+              <header className="mb-4 border-b border-neutral-200 p-4 dark:border-neutral-800">
+                <h1 className="text-center text-xl font-bold">
+                  Advanced Patterns React
                 </h1>
-                <p className="text-center text-lg text-neutral-500">
-                  You're going to build a lot of great things here. Let's get
-                  started!
+                <p className="text-center text-sm text-neutral-500">
+                  <b>
+                    <span className="dark:text-primary-500">Cosden</span>{" "}
+                    Solutions
+                  </b>
                 </p>
-              </div>
+              </header>
+              <Index />
             </div>
           </div>
-        </div>
-      </ThemeProvider>
-    </>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </trpc.Provider>
   );
+}
+
+function Index() {
+  const userQuery = trpc.experiences.byId.useQuery({ id: 1 });
+  return <div>{userQuery.data?.title}</div>;
 }

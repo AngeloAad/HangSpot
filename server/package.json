@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@advanced-react/shared": "workspace:*",
-    "@trpc/server": "11.0.0-rc.645",
+    "@trpc/server": "11.4.3",
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^11.5.0",
     "cookie-parser": "^1.4.7",
