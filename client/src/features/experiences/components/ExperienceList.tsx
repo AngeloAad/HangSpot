@@ -1,4 +1,4 @@
-import { ExperienceCard } from "../ExperienceCard";
+import { ExperienceCard } from "./ExperienceCard";
 import Spinner from "@/features/shared/components/ui/Spinner";
 import { ExperienceForList } from "../types";
 

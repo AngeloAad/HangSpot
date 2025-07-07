@@ -1,6 +1,7 @@
 import Card from "@/features/shared/components/ui/Card";
-import { ExperienceForList } from "./types";
+import { ExperienceForList } from "../types";
 import { LinkIcon, MessageSquare } from "lucide-react";
+import { CommentsSection } from "@/features/comments/components/CommentsSection";
 
 type ExperienceCardProps = {
   experience: ExperienceForList;
@@ -15,6 +16,7 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
         <ExperienceCardContent experience={experience} />
         <ExperienceCardMetadata experience={experience} />
         <ExperienceCardMetricButtons experience={experience} />
+        <CommentsSection experienceId={experience.id} commentsCount={experience.commentsCount} />
       </div>
     </Card>
   );
@@ -101,7 +103,9 @@ function ExperienceCardMetadata({ experience }: ExperienceCardMetadataProps) {
 /***************************************/
 type ExperienceCardMetricButtonsProps = Pick<ExperienceCardProps, "experience">;
 
-function ExperienceCardMetricButtons({ experience }: ExperienceCardMetricButtonsProps) {
+function ExperienceCardMetricButtons({
+  experience,
+}: ExperienceCardMetricButtonsProps) {
   return (
     <div className="flex items-center gap-2">
       <MessageSquare className="h-5 w-5" />
