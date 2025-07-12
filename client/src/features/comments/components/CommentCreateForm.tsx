@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { trpc } from "@/lib/utils/trpc";
+import { trpc } from "@/router";
 import { Experience } from "@advanced-react/server/database/schema";
 import { commentValidationSchema } from "@advanced-react/shared/schema/comment";
 import {

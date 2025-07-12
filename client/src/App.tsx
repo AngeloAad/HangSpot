@@ -5,7 +5,7 @@ import { Toaster } from "./features/shared/components/ui/Toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { env } from "./lib/utils/env";
-import { trpc } from "./lib/utils/trpc";
+import { trpc } from "./router";
 import { ExperienceList } from "./features/experiences/components/ExperienceList";
 import { InfiniteScroll } from "./features/shared/components/InfiniteScroll";
 
