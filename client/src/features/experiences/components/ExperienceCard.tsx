@@ -3,6 +3,7 @@ import { ExperienceForList } from "../types";
 import { LinkIcon, MessageSquare } from "lucide-react";
 import Link from "@/features/shared/components/ui/Link";
 import { Button } from "@/features/shared/components/ui/Button";
+import { UserAvatar } from "@/features/users/components/UserAvatar";
 
 type ExperienceCardProps = {
   experience: ExperienceForList;
@@ -11,23 +12,26 @@ type ExperienceCardProps = {
 export function ExperienceCard({ experience }: ExperienceCardProps) {
   return (
     <Card className="overflow-hidden p-0">
-      <ExperienceCardImage experience={experience} />
-      <div className="w-full space-y-4 p-4">
-        <ExperienceCardHeader experience={experience} />
-        <ExperienceCardContent experience={experience} />
-        <ExperienceCardMetadata experience={experience} />
-        <ExperienceCardMetricButtons experience={experience} />
+      <ExperienceCardMedia experience={experience} />
+      <div className="flex items-start gap-4 p-4">
+        <ExperienceCardAvatar experience={experience} />
+        <div className="w-full space-y-4">
+          <ExperienceCardHeader experience={experience} />
+          <ExperienceCardContent experience={experience} />
+          <ExperienceCardMetadata experience={experience} />
+          <ExperienceCardMetricButtons experience={experience} />
+        </div>
       </div>
     </Card>
   );
 }
 
 /***************************************/
-/* EXPERIENCE CARD IMAGE COMPONENT BELOW */
+/* EXPERIENCE CARD MEDIA COMPONENT BELOW */
 /***************************************/
-type ExperienceCardImageProps = Pick<ExperienceCardProps, "experience">;
+type ExperienceCardMediaProps = Pick<ExperienceCardProps, "experience">;
 
-function ExperienceCardImage({ experience }: ExperienceCardImageProps) {
+function ExperienceCardMedia({ experience }: ExperienceCardMediaProps) {
   if (!experience.imageUrl) {
     return null;
   }
@@ -39,6 +43,19 @@ function ExperienceCardImage({ experience }: ExperienceCardImageProps) {
         alt={experience.title}
         className="h-full w-full object-cover"
       />
+    </div>
+  );
+}
+
+/***************************************/
+/* EXPERIENCE CARD AVATAR COMPONENT BELOW */
+/***************************************/
+type ExperienceCardAvatarProps = Pick<ExperienceCardProps, "experience">;
+
+function ExperienceCardAvatar({ experience }: ExperienceCardAvatarProps) {
+  return (
+    <div>
+      <UserAvatar user={experience.user} showName={false} />
     </div>
   );
 }

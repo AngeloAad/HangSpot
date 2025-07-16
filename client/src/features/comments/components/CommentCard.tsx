@@ -13,6 +13,7 @@ import {
 } from "@/features/shared/components/ui/Dialog";
 import { trpc } from "@/router";
 import { useToast } from "@/features/shared/hooks/useToast";
+import { UserAvatar } from "@/features/users/components/UserAvatar";
 
 type CommentCardProps = {
   comment: CommentForList;
@@ -26,7 +27,7 @@ export function CommentCard({ comment }: CommentCardProps) {
   }
 
   return (
-    <Card className="space-y-2 p-4">
+    <Card className="space-y-4 p-4">
       <CommentCardHeader comment={comment} />
       <CommentCardContent comment={comment} />
       <CommentCardButtons comment={comment} setIsEditing={setIsEditing} />
@@ -42,7 +43,7 @@ type CommentCardHeaderProps = Pick<CommentCardProps, "comment">;
 function CommentCardHeader({ comment }: CommentCardHeaderProps) {
   return (
     <div className="flex items-center gap-3">
-      <div className="font-medium">{comment.user.name}</div>
+      <UserAvatar user={comment.user} />
       <time className="text-sm text-neutral-600 dark:text-neutral-400">
         {new Date(comment.createdAt).toLocaleDateString()}
       </time>
@@ -100,7 +101,7 @@ function CommentCardButtons({ comment, setIsEditing }: CommentCardButtonsProps) 
   })
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 pl-1">
       <Button variant="link" onClick={() => setIsEditing(true)}>
         Edit
       </Button>
