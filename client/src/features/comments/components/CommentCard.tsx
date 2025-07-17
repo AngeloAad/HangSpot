@@ -14,6 +14,7 @@ import {
 import { trpc } from "@/router";
 import { useToast } from "@/features/shared/hooks/useToast";
 import { UserAvatar } from "@/features/users/components/UserAvatar";
+import Link from "@/features/shared/components/ui/Link";
 
 type CommentCardProps = {
   comment: CommentForList;
@@ -43,7 +44,9 @@ type CommentCardHeaderProps = Pick<CommentCardProps, "comment">;
 function CommentCardHeader({ comment }: CommentCardHeaderProps) {
   return (
     <div className="flex items-center gap-3">
-      <UserAvatar user={comment.user} />
+      <Link to="/users/$userId" params={{ userId: comment.userId }} variant="ghost">
+        <UserAvatar user={comment.user} />
+      </Link>
       <time className="text-sm text-neutral-600 dark:text-neutral-400">
         {new Date(comment.createdAt).toLocaleDateString()}
       </time>
@@ -71,9 +74,12 @@ type CommentCardButtonsProps = Pick<CommentCardProps, "comment"> & {
   setIsEditing: (value: boolean) => void;
 };
 
-function CommentCardButtons({ comment, setIsEditing }: CommentCardButtonsProps) {
+function CommentCardButtons({
+  comment,
+  setIsEditing,
+}: CommentCardButtonsProps) {
   const utils = trpc.useUtils();
-  const { toast } = useToast()
+  const { toast } = useToast();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const deleteCommentMutation = trpc.comments.delete.useMutation({
@@ -88,7 +94,7 @@ function CommentCardButtons({ comment, setIsEditing }: CommentCardButtonsProps) 
       setIsDeleteDialogOpen(false);
 
       toast({
-        title: "Comment deleted successfully"
+        title: "Comment deleted successfully",
       });
     },
     onError: (error) => {
@@ -96,9 +102,9 @@ function CommentCardButtons({ comment, setIsEditing }: CommentCardButtonsProps) 
         title: "Failed to delete comment",
         description: error.message,
         variant: "destructive",
-      })
-    }
-  })
+      });
+    },
+  });
 
   return (
     <div className="flex gap-4 pl-1">
@@ -118,7 +124,12 @@ function CommentCardButtons({ comment, setIsEditing }: CommentCardButtonsProps) 
             undone.
           </p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+            >
+              Cancel
+            </Button>
             <Button
               variant="destructive"
               onClick={() => {

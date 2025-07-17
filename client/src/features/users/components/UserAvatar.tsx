@@ -10,6 +10,7 @@ type UserAvatarProps = {
   user: User;
   showName?: boolean;
   nameClassName?: string;
+  avatarClassName?: string;
   className?: string;
 };
 
@@ -17,6 +18,7 @@ export const UserAvatar = ({
   user,
   showName = true,
   nameClassName = "",
+  avatarClassName = "",
   className = "",
 }: UserAvatarProps) => {
   return (
@@ -26,7 +28,13 @@ export const UserAvatar = ({
           src={user.avatarUrl ?? undefined}
           className="object-cover"
         />
-        <AvatarFallback>{user.name.slice(0, 2)}</AvatarFallback>
+        <AvatarFallback className={cn("font-bold tracking-wider", avatarClassName)}>
+          {user.name
+            .split(' ')
+            .map(word => word[0])
+            .join('')
+            .toUpperCase()}
+        </AvatarFallback>
       </Avatar>
       {showName && (
         <span
