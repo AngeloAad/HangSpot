@@ -1,3 +1,5 @@
+import { ChangeEmailDialog } from "@/features/auth/components/ChangeEmailDialog";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { Button } from "@/features/shared/components/ui/Button";
 import Card from "@/features/shared/components/ui/Card";
 import { useToast } from "@/features/shared/hooks/useToast";
@@ -5,10 +7,11 @@ import { router, trpc } from "@/router";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/settings")({
+  
   component: SettingsPage,
   loader: async ({ context: { trpcQueryUtils } }) => {
     const { currentUser } = await trpcQueryUtils.auth.currentUser.ensureData();
-
+    
     if (!currentUser) {
       return redirect({ to: "/login" });
     }
@@ -16,6 +19,8 @@ export const Route = createFileRoute("/settings")({
 });
 
 function SettingsPage() {
+  const { currentUser } = useCurrentUser();
+
   const utils = trpc.useUtils();
   const { toast } = useToast();
 
@@ -40,6 +45,10 @@ function SettingsPage() {
   });
 
   const settings = [
+    {
+      Label: currentUser?.email,
+      component: <ChangeEmailDialog />,
+    },
     {
       Label: "Sign out of your account",
       component: (
