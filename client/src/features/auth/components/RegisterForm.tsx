@@ -16,51 +16,64 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/features/shared/hooks/useToast";
 import Link from "@/features/shared/components/ui/Link";
 
-const loginCredentialsSchema = userCredentialsSchema.omit({
-  name: true,
-});
+const registerCredentialsSchema = userCredentialsSchema;
 
-type loginFormData = z.infer<typeof loginCredentialsSchema>;
+type registerFormData = z.infer<typeof registerCredentialsSchema>;
 
-export function LoginForm() {
+export function RegisterForm() {
   const { toast } = useToast();
   const utils = trpc.useUtils();
 
-  const form = useForm<loginFormData>({
-    resolver: zodResolver(loginCredentialsSchema),
+  const form = useForm<registerFormData>({
+    resolver: zodResolver(registerCredentialsSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
 
-  const loginMutation = trpc.auth.login.useMutation({
+  const registerMutation = trpc.auth.register.useMutation({
     onSuccess: async () => {
       await utils.auth.currentUser.invalidate();
 
       router.navigate({ to: "/" });
 
       toast({
-        title: "Logged in",
-        description: "You are now logged in",
+        title: "Account Created",
+        description: "You are now signed in to Hangspot",
       });
     },
     onError: (error) => {
       toast({
-        title: "Failed to login",
+        title: "Failed to create account",
         description: error.message,
         variant: "destructive",
       });
     },
   });
 
-  const onSubmit = (data: loginFormData) => {
-    loginMutation.mutate(data);
+  const onSubmit = (data: registerFormData) => {
+    registerMutation.mutate(data);
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input {...field} type="name" placeholder="Name" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="email"
@@ -92,17 +105,17 @@ export function LoginForm() {
         <Button
           type="submit"
           className="w-full"
-          disabled={loginMutation.isPending}
+          disabled={registerMutation.isPending}
         >
-          {loginMutation.isPending ? "Logging in..." : "Login"}
+          {registerMutation.isPending ? "Signing in..." : "Sign in"}
         </Button>
 
         <Link
-          to="/register"
+          to="/login"
           className="flex items-center justify-center"
           variant="secondary"
         >
-          Don't have an account? <span className="font-bold">Register</span>
+          Already have an account? <span className="font-bold">Login</span>
         </Link>
       </form>
     </Form>
