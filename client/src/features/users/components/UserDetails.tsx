@@ -2,6 +2,8 @@ import Card from "@/features/shared/components/ui/Card";
 import { UserForDetails } from "../types";
 import { UserAvatar } from "./UserAvatar";
 import { Martini } from "lucide-react";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
+import { UserEditDialog } from "./UserEditDialog";
 
 type UserDetailsProps = {
   user: UserForDetails;
@@ -31,6 +33,8 @@ function UserDetailsHeader({ user }: UserDetailsHeaderProps) {
         <h1 className="text-2xl font-bold">{user.name}</h1>
         {user.bio && <p className="mt-2 dark:text-neutral-400">{user.bio}</p>}
       </div>
+
+      <UserProfileButton user={user} />
     </Card>
   );
 }
@@ -51,4 +55,19 @@ function UserDetailsHostStats({ user }: UserDetailsHostStatsProps) {
       </div>
     </Card>
   );
+}
+
+type UserProfileButtonProps = {
+  user: UserForDetails;
+};
+
+function UserProfileButton({ user }: UserProfileButtonProps) {
+  const { currentUser } = useCurrentUser();
+  const isCurrentUser = currentUser?.id === user.id;
+
+  if (isCurrentUser) {
+    return <UserEditDialog user={user} />
+  }
+
+  return null;
 }
