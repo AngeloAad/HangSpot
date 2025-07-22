@@ -18,28 +18,28 @@ import {
 import Input from "@/features/shared/components/ui/Input";
 import { useToast } from "@/features/shared/hooks/useToast";
 import { trpc } from "@/router";
-import { changeEmailSchema } from "@advanced-react/shared/schema/auth";
+import { changePasswordSchema } from "@advanced-react/shared/schema/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-type ChangeEmailFormData = z.infer<typeof changeEmailSchema>;
+type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 
-export function ChangeEmailDialog() {
+export function ChangePasswordDialog() {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
   const utils = trpc.useUtils();
 
-  const form = useForm<ChangeEmailFormData>({
-    resolver: zodResolver(changeEmailSchema),
+  const form = useForm<ChangePasswordFormData>({
+    resolver: zodResolver(changePasswordSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      currentPassword: "",
+      newPassword: "",
     },
   });
 
-  const changeEmailMutation = trpc.auth.changeEmail.useMutation({
+  const changePasswordMutation = trpc.auth.changePassword.useMutation({
     onSuccess: async () => {
       await utils.auth.currentUser.invalidate();
 
@@ -49,50 +49,37 @@ export function ChangeEmailDialog() {
 
       toast({
         title: "Success",
-        description: "Your email has been changed!",
+        description: "Your password has been changed!",
       });
     },
     onError: (error) => {
       toast({
-        title: "Failed to change email",
+        title: "Failed to change password",
         description: error.message,
         variant: "destructive",
       });
     },
   });
 
-  const handleSubmit = form.handleSubmit((data: ChangeEmailFormData) => {
-    changeEmailMutation.mutate(data);
+  const handleSubmit = form.handleSubmit((data: ChangePasswordFormData) => {
+    changePasswordMutation.mutate(data);
   });
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>Update Email</Button>
+        <Button>Update Password</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Change Email</DialogTitle>
+          <DialogTitle>Change Password</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>New Email</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="email" placeholder="Email" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}
-              name="password"
+              name="currentPassword"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Current Password</FormLabel>
@@ -104,11 +91,25 @@ export function ChangeEmailDialog() {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="newPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>New Password</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="password" placeholder="Password" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <DialogFooter>
-              <Button type="submit" disabled={changeEmailMutation.isPending}>
-                {changeEmailMutation.isPending
-                  ? "Updating Email..."
-                  : "Update Email"}
+              <Button type="submit" disabled={changePasswordMutation.isPending}>
+                {changePasswordMutation.isPending
+                  ? "Updating Password..."
+                  : "Update Password"}
               </Button>
             </DialogFooter>
           </form>

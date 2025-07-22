@@ -53,13 +53,13 @@ export function RegisterForm() {
     },
   });
 
-  const onSubmit = (data: registerFormData) => {
+  const handleSubmit = form.handleSubmit((data: registerFormData) => {
     registerMutation.mutate(data);
-  };
+  });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <FormField
           control={form.control}
           name="name"
