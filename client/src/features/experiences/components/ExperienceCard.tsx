@@ -1,9 +1,10 @@
 import Card from "@/features/shared/components/ui/Card";
 import { ExperienceForList } from "../types";
-import { LinkIcon, MessageSquare } from "lucide-react";
+import { LinkIcon, MessageSquare, Pencil } from "lucide-react";
 import Link from "@/features/shared/components/ui/Link";
 import { Button } from "@/features/shared/components/ui/Button";
 import { UserAvatar } from "@/features/users/components/UserAvatar";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 
 type ExperienceCardProps = {
   experience: ExperienceForList;
@@ -20,15 +21,13 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
           <ExperienceCardContent experience={experience} />
           <ExperienceCardMetadata experience={experience} />
           <ExperienceCardMetricButtons experience={experience} />
+          <ExperienceCardActionButtons experience={experience} />
         </div>
       </div>
     </Card>
   );
 }
 
-/***************************************/
-/* EXPERIENCE CARD MEDIA COMPONENT BELOW */
-/***************************************/
 type ExperienceCardMediaProps = Pick<ExperienceCardProps, "experience">;
 
 function ExperienceCardMedia({ experience }: ExperienceCardMediaProps) {
@@ -47,30 +46,32 @@ function ExperienceCardMedia({ experience }: ExperienceCardMediaProps) {
   );
 }
 
-/***************************************/
-/* EXPERIENCE CARD AVATAR COMPONENT BELOW */
-/***************************************/
 type ExperienceCardAvatarProps = Pick<ExperienceCardProps, "experience">;
 
 function ExperienceCardAvatar({ experience }: ExperienceCardAvatarProps) {
   return (
     <div>
-      <Link to="/users/$userId" params={{ userId: experience.userId }} variant="ghost">
+      <Link
+        to="/users/$userId"
+        params={{ userId: experience.userId }}
+        variant="ghost"
+      >
         <UserAvatar user={experience.user} showName={false} />
       </Link>
     </div>
   );
 }
 
-/***************************************/
-/* EXPERIENCE CARD HEADER COMPONENT BELOW */
-/***************************************/
 type ExperienceCardHeaderProps = Pick<ExperienceCardProps, "experience">;
 
 function ExperienceCardHeader({ experience }: ExperienceCardHeaderProps) {
   return (
     <div>
-      <Link to="/users/$userId" params={{ userId: experience.userId }} variant="ghost">
+      <Link
+        to="/users/$userId"
+        params={{ userId: experience.userId }}
+        variant="ghost"
+      >
         <p className="text-muted-foreground text-sm">{experience.user.name}</p>
       </Link>
       <Link
@@ -83,24 +84,18 @@ function ExperienceCardHeader({ experience }: ExperienceCardHeaderProps) {
   );
 }
 
-/***************************************/
-/* EXPERIENCE CARD CONTENT COMPONENT BELOW */
-/***************************************/
 type ExperienceCardContentProps = Pick<ExperienceCardProps, "experience">;
 
 function ExperienceCardContent({ experience }: ExperienceCardContentProps) {
   return <p>{experience.content}</p>;
 }
 
-/***************************************/
-/* EXPERIENCE CARD METADATA COMPONENT BELOW */
-/***************************************/
 type ExperienceCardMetadataProps = Pick<ExperienceCardProps, "experience">;
 
 function ExperienceCardMetadata({ experience }: ExperienceCardMetadataProps) {
   return (
     <div className="flex items-center gap-4 text-neutral-600 dark:text-neutral-400">
-      <time>{new Date(experience.scheduledAt).toLocaleDateString()}</time>
+      <time>{new Date(experience.createdAt).toLocaleString()}</time>
       {experience.url && (
         <div className="flex items-center gap-2">
           <LinkIcon
@@ -120,9 +115,6 @@ function ExperienceCardMetadata({ experience }: ExperienceCardMetadataProps) {
   );
 }
 
-/***************************************/
-/* EXPERIENCE CARD METRIC BUTTONS COMPONENT BELOW */
-/***************************************/
 type ExperienceCardMetricButtonsProps = Pick<ExperienceCardProps, "experience">;
 
 function ExperienceCardMetricButtons({
@@ -138,6 +130,42 @@ function ExperienceCardMetricButtons({
         >
           <MessageSquare className="h-5 w-5" />
           <span>{experience.commentsCount}</span>
+        </Link>
+      </Button>
+    </div>
+  );
+}
+
+type ExperienceCardActionButtonsProps = Pick<ExperienceCardProps, "experience">;
+
+function ExperienceCardActionButtons({
+  experience,
+}: ExperienceCardActionButtonsProps) {
+  const { currentUser } = useCurrentUser();
+
+  const isPostOwner = currentUser?.id === experience.userId;
+
+  if (isPostOwner) {
+    return <ExperienceCardOwnerButtons experience={experience} />;
+  }
+
+  return null;
+}
+
+type ExperienceCardOwnerButtonsProps = Pick<ExperienceCardProps, "experience">;
+
+function ExperienceCardOwnerButtons({
+  experience,
+}: ExperienceCardOwnerButtonsProps) {
+  return (
+    <div className="flex items-center gap-2">
+      <Button variant="link" asChild>
+        <Link
+          to="/experiences/$experienceId/edit"
+          params={{ experienceId: experience.id }}
+          variant="ghost"
+        >
+          <span>Edit</span>
         </Link>
       </Button>
     </div>
