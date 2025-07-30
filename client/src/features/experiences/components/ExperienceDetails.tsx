@@ -4,6 +4,8 @@ import { LinkIcon } from "lucide-react";
 import { Button } from "@/features/shared/components/ui/Button";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import Link from "@/features/shared/components/ui/Link";
+import ExperienceDeleteDialog from "./ExperienceDeleteDialog";
+import { router } from "@/router";
 
 type ExperienceDetailsProps = {
   experience: ExperienceForDetails;
@@ -127,6 +129,16 @@ function ExperienceDetailsOwnerButtons({
           <span>Edit</span>
         </Link>
       </Button>
+
+      <ExperienceDeleteDialog
+        experience={experience}
+        onSuccess={() => {
+          router.navigate({
+            to: "/",
+          });
+        }}
+        buttonClassName="border p-2 border-neutral-800 hover:bg-neutral-700"
+      />
     </div>
   );
 }
