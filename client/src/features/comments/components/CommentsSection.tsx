@@ -3,6 +3,7 @@ import { Experience } from "@advanced-react/server/database/schema";
 import CommentList from "./CommentList";
 import { CommentCreateForm } from "./CommentCreateForm";
 import { ErrorComponent } from "@/features/shared/components/ErrorComponent";
+import Card from "@/features/shared/components/ui/Card";
 
 type CommentsSectionProps = {
   experienceId: Experience["id"];
@@ -13,10 +14,11 @@ export function CommentsSection({
   experienceId,
   commentsCount,
 }: CommentsSectionProps) {
-  const commentsQuery = trpc.comments.byExperienceId.useQuery({ experienceId },
+  const commentsQuery = trpc.comments.byExperienceId.useQuery(
+    { experienceId },
     {
-        enabled: commentsCount > 0,
-    }
+      enabled: commentsCount > 0,
+    },
   );
 
   if (commentsQuery.error) {
@@ -27,7 +29,9 @@ export function CommentsSection({
     <div className="space-y-4">
       <h3 className="font-semibold">Comments ({commentsCount})</h3>
 
-      <CommentCreateForm experienceId={experienceId} />
+      <Card>
+        <CommentCreateForm experienceId={experienceId} />
+      </Card>
 
       <CommentList
         comments={commentsQuery.data ?? []}
