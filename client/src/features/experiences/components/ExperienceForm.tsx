@@ -1,5 +1,14 @@
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FileText, Link as LinkIcon, Type } from "lucide-react";
+
+import { Experience } from "@advanced-react/server/database/schema";
+import { experienceValidationSchema } from "@advanced-react/shared/schema/experience";
+
 import { Button } from "@/features/shared/components/ui/Button";
 import Card from "@/features/shared/components/ui/Card";
+import FileInput from "@/features/shared/components/ui/FileInput";
 import {
   Form,
   FormControl,
@@ -10,12 +19,7 @@ import {
 } from "@/features/shared/components/ui/Form";
 import Input from "@/features/shared/components/ui/Input";
 import { TextArea } from "@/features/shared/components/ui/TextArea";
-import { Experience } from "@advanced-react/server/database/schema";
-import { experienceValidationSchema } from "@advanced-react/shared/schema/experience";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FileText, Link as LinkIcon, Type } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+
 import { useExperienceMutations } from "../hooks/useExperienceMutations";
 
 type ExperienceFormData = z.infer<typeof experienceValidationSchema>;
@@ -130,6 +134,25 @@ export function ExperienceForm({
                       placeholder="https://example.com (optional)"
                       type="url"
                       className="h-11 text-base"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image</FormLabel>
+                  <FormControl>
+                    <FileInput
+                      accept="image/*"
+                      onChange={(event) => {
+                        field.onChange(event.target?.files?.[0]);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />

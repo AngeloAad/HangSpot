@@ -1,3 +1,13 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { User } from "@advanced-react/server/database/schema";
+import { userEditSchema } from "@advanced-react/shared/schema/auth";
+
+import { trpc } from "@/router";
+
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { Button } from "@/features/shared/components/ui/Button";
 import {
@@ -8,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/features/shared/components/ui/Dialog";
+import FileInput from "@/features/shared/components/ui/FileInput";
 import {
   Form,
   FormControl,
@@ -18,13 +29,6 @@ import {
 } from "@/features/shared/components/ui/Form";
 import Input from "@/features/shared/components/ui/Input";
 import { useToast } from "@/features/shared/hooks/useToast";
-import { trpc } from "@/router";
-import { User } from "@advanced-react/server/database/schema";
-import { userEditSchema } from "@advanced-react/shared/schema/auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 type UserFormData = z.infer<typeof userEditSchema>;
 
@@ -76,9 +80,9 @@ export function UserEditDialog({ user }: UserEditDialogProps) {
     const formData = new FormData();
 
     for (const [key, value] of Object.entries(data)) {
-        if (value !== undefined && value !== null) {
-            formData.append(key, value as string | Blob)
-        }
+      if (value !== undefined && value !== null) {
+        formData.append(key, value as string | Blob);
+      }
     }
 
     editUserMutation.mutate(formData);
@@ -102,7 +106,11 @@ export function UserEditDialog({ user }: UserEditDialogProps) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input {...field} type="name" placeholder={currentUser?.name} />
+                    <Input
+                      {...field}
+                      type="name"
+                      placeholder={currentUser?.name}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -116,7 +124,30 @@ export function UserEditDialog({ user }: UserEditDialogProps) {
                 <FormItem>
                   <FormLabel>Bio</FormLabel>
                   <FormControl>
-                    <Input {...field} type="bio" placeholder={currentUser?.bio ?? ""} />
+                    <Input
+                      {...field}
+                      type="bio"
+                      placeholder={currentUser?.bio ?? ""}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="photo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image</FormLabel>
+                  <FormControl>
+                    <FileInput
+                      accept="image/*"
+                      onChange={(event) => {
+                        field.onChange(event.target?.files?.[0])
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
