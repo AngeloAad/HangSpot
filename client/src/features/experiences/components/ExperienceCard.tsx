@@ -1,6 +1,6 @@
 import Card from "@/features/shared/components/ui/Card";
 import { ExperienceForList } from "../types";
-import { LinkIcon, MessageSquare, Pencil, User } from "lucide-react";
+import { LinkIcon, MessageSquare, User } from "lucide-react";
 import Link from "@/features/shared/components/ui/Link";
 import { Button } from "@/features/shared/components/ui/Button";
 import { UserAvatar } from "@/features/users/components/UserAvatar";

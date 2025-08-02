@@ -7,8 +7,8 @@ export default function Navigation() {
   const { currentUser } = useCurrentUser();
 
   const navLinkClassName =
-    "rounded-lg p-2 text-lg hover:bg-neutral-100 dark:hover-bg-neutral-800";
-  const activeNavLinkClassName = "bg-neutral-100 dark:bg-neutral-800";
+    "rounded-lg p-2 text-lg hover:bg-neutral-200 dark:hover:bg-neutral-700";
+  const activeNavLinkClassName = "bg-neutral-200 dark:bg-neutral-700";
 
   return (
     <nav className="flex w-64 flex-col gap-4 pt-8">

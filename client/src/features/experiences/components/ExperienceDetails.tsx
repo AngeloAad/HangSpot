@@ -1,5 +1,5 @@
 import Card from "@/features/shared/components/ui/Card";
-import { ExperienceForDetails, ExperienceForList } from "../types";
+import { ExperienceForDetails } from "../types";
 import { LinkIcon } from "lucide-react";
 import { Button } from "@/features/shared/components/ui/Button";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";

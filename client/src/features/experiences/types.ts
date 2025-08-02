@@ -17,14 +17,13 @@ type ExperienceWithAttendeesCount = Experience & {
 };
 
 type ExperienceWithAttendees = Experience & {
-  attendees: [];
+  attendees: User[];
 };
 
 export type ExperienceForList = ExperienceWithUser &
   ExperienceWithUserContext &
   ExperienceWithCommentsCount &
-  ExperienceWithAttendeesCount &
-  ExperienceWithAttendees;
+  ExperienceWithAttendeesCount;
 
 export type ExperienceForDetails = ExperienceWithUser &
   ExperienceWithUserContext &
