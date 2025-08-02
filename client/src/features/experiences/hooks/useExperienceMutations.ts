@@ -1,6 +1,7 @@
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { useToast } from "@/features/shared/hooks/useToast";
 import { trpc } from "@/router";
-import { Experience } from "@advanced-react/server/database/schema";
+import { Experience, User } from "@advanced-react/server/database/schema";
 import { useParams, useSearch } from "@tanstack/react-router";
 
 type ExperienceMutationsOptions = {
@@ -17,6 +18,7 @@ export function useExperienceMutations(
 ) {
   const { toast } = useToast();
   const utils = trpc.useUtils();
+  const { currentUser } = useCurrentUser();
 
   const { userId: pathUserId } = useParams({ strict: false });
   const { q: pathQ } = useSearch({ strict: false });
@@ -73,11 +75,17 @@ export function useExperienceMutations(
       function updateExperience<
         T extends {
           isAttending: boolean;
+          attendeesCount: number;
+          attendees?: User[];
         },
       >(oldData: T) {
         return {
           ...oldData,
           isAttending: true,
+          attendeesCount: oldData.attendeesCount + 1,
+          ...(oldData.attendees && {
+            attendees: [currentUser, ...oldData.attendees],
+          }),
         };
       }
 
@@ -198,11 +206,19 @@ export function useExperienceMutations(
       function updateExperience<
         T extends {
           isAttending: boolean;
+          attendeesCount: number;
+          attendees?: User[];
         },
       >(oldData: T) {
         return {
           ...oldData,
           isAttending: false,
+          attendeesCount: Math.max(0, oldData.attendeesCount - 1),
+          ...(oldData.attendees && {
+            attendees: oldData.attendees.filter(
+              (a) => a.id !== currentUser?.id,
+            ),
+          }),
         };
       }
 
