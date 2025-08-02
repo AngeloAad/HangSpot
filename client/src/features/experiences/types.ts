@@ -12,10 +12,22 @@ type ExperienceWithCommentsCount = Experience & {
   commentsCount: number;
 };
 
+type ExperienceWithAttendeesCount = Experience & {
+  attendeesCount: number;
+};
+
+type ExperienceWithAttendees = Experience & {
+  attendees: [];
+};
+
 export type ExperienceForList = ExperienceWithUser &
   ExperienceWithUserContext &
-  ExperienceWithCommentsCount;
+  ExperienceWithCommentsCount &
+  ExperienceWithAttendeesCount &
+  ExperienceWithAttendees;
 
 export type ExperienceForDetails = ExperienceWithUser &
   ExperienceWithUserContext &
-  ExperienceWithCommentsCount;
+  ExperienceWithCommentsCount &
+  ExperienceWithAttendeesCount &
+  ExperienceWithAttendees;

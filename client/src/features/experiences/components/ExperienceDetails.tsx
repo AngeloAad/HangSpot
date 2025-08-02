@@ -1,5 +1,5 @@
 import Card from "@/features/shared/components/ui/Card";
-import { ExperienceForDetails } from "../types";
+import { ExperienceForDetails, ExperienceForList } from "../types";
 import { LinkIcon } from "lucide-react";
 import { Button } from "@/features/shared/components/ui/Button";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
@@ -7,6 +7,7 @@ import Link from "@/features/shared/components/ui/Link";
 import ExperienceDeleteDialog from "./ExperienceDeleteDialog";
 import { router } from "@/router";
 import ExperienceAttendButton from "./ExperienceAttendButton";
+import { UserAvatarList } from "@/features/users/components/UserAvatarList";
 
 type ExperienceDetailsProps = {
   experience: ExperienceForDetails;
@@ -21,6 +22,7 @@ export const ExperienceDetails = ({ experience }: ExperienceDetailsProps) => {
         <ExperienceDetailsHeader experience={experience} />
         <ExperienceDetailsMeta experience={experience} />
         <ExperienceDetailsActionButtons experience={experience} />
+        <ExperienceDetailsAttendees experience={experience} />
       </div>
     </Card>
   );
@@ -88,6 +90,46 @@ function ExperienceDetailsMeta({ experience }: ExperienceDetailsMetaProps) {
           </a>
         </div>
       )}
+    </div>
+  );
+}
+
+type ExperienceDetailsAttendeesProps = Pick<
+  ExperienceDetailsProps,
+  "experience"
+>;
+
+function ExperienceDetailsAttendees({
+  experience,
+}: ExperienceDetailsAttendeesProps) {
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <h3 className="font-medium">Host</h3>
+        <UserAvatarList users={[experience.user]} totalCount={1} />
+      </div>
+
+      <div className="space-y-2">
+        <Link
+          to="/experiences/$experienceId/attendees"
+          params={{ experienceId: experience.id }}
+          variant="secondary"
+        >
+          <h3 className="font-medium">
+            Attendees ({experience.attendeesCount})
+          </h3>
+        </Link>
+        {experience.attendeesCount > 0 ? (
+          <UserAvatarList
+            users={experience.attendees}
+            totalCount={experience.attendeesCount}
+          />
+        ) : (
+          <p className="text-neutral-600 dark:text-neutral-400">
+            Be The First to attend!
+          </p>
+        )}
+      </div>
     </div>
   );
 }

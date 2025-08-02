@@ -4,4 +4,6 @@ type UserHostedExperiencesCount = User & {
     hostedExperiencesCount: number;
 }
 
+export type UserForList = User;
+
 export type UserForDetails = UserHostedExperiencesCount;
