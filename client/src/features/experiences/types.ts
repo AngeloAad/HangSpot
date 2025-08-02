@@ -4,11 +4,18 @@ type ExperienceWithUser = Experience & {
   user: User;
 };
 
+type ExperienceWithUserContext = Experience & {
+  isAttending: boolean;
+};
+
 type ExperienceWithCommentsCount = Experience & {
   commentsCount: number;
 };
 
-export type ExperienceForList = ExperienceWithUser & ExperienceWithCommentsCount;
+export type ExperienceForList = ExperienceWithUser &
+  ExperienceWithUserContext &
+  ExperienceWithCommentsCount;
 
 export type ExperienceForDetails = ExperienceWithUser &
+  ExperienceWithUserContext &
   ExperienceWithCommentsCount;
