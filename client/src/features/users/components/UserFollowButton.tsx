@@ -331,7 +331,6 @@ export function UserFollowButton({
         e.preventDefault();
 
         if (isFollowing) {
-          // TODO: Implement unfollow
           unFollowUserMutation.mutate({ id: targetUsetId });
         } else {
           followUserMutation.mutate({ id: targetUsetId });

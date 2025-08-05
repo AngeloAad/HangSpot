@@ -26,7 +26,6 @@ export default function ExperienceAttendButton({
       variant={isAttending ? "outline" : "default"}
       onClick={() => {
         if (isAttending) {
-          // TODO: Implement unattending the experience
           unattendExperienceMutation.mutate({ id: experienceId });
         } else {
           attendExperienceMutation.mutate({ id: experienceId });
