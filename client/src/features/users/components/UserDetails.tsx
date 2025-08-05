@@ -5,6 +5,7 @@ import { Martini } from "lucide-react";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { UserEditDialog } from "./UserEditDialog";
 import Link from "@/features/shared/components/ui/Link";
+import { UserFollowButton } from "./UserFollowButton";
 
 type UserDetailsProps = {
   user: UserForDetails;
@@ -111,9 +112,11 @@ function UserProfileButton({ user }: UserProfileButtonProps) {
   const { currentUser } = useCurrentUser();
   const isCurrentUser = currentUser?.id === user.id;
 
-  if (isCurrentUser) {
-    return <UserEditDialog user={user} />;
-  }
+  return isCurrentUser ? (
+    <UserEditDialog user={user} />
+  ) : (
+    <UserFollowButton targetUsetId={user.id} isFollowing={user.isFollowing} />
+  );
 
   return null;
 }
