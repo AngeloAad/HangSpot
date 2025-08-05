@@ -1,3 +1,4 @@
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { Button } from "@/features/shared/components/ui/Button";
 import {
   Form,
@@ -14,6 +15,7 @@ import { commentValidationSchema } from "@advanced-react/shared/schema/comment";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { CommentOptimistic } from "../type";
 
 type CommentEditFormData = z.infer<typeof commentValidationSchema>;
 
@@ -29,6 +31,8 @@ export function CommentEditForm({
   const utils = trpc.useUtils();
   const { toast } = useToast();
 
+  const { currentUser } = useCurrentUser();
+
   const form = useForm<CommentEditFormData>({
     resolver: zodResolver(commentValidationSchema),
     defaultValues: {
@@ -37,16 +41,51 @@ export function CommentEditForm({
   });
 
   const editCommentMutation = trpc.comments.edit.useMutation({
-    onSuccess: async ({ experienceId }) => {
-      await utils.comments.byExperienceId.invalidate({ experienceId });
-
+    onMutate: async ({ id, content }) => {
       setIsEditing(false);
-
-      toast({
-        title: "Comment edited successfully",
+      // STEP 1
+      await utils.comments.byExperienceId.cancel({
+        experienceId: comment.experienceId,
       });
+
+      // STEP 2
+      const previousData = {
+        byExperienceId: utils.comments.byExperienceId.getData({
+          experienceId: comment.experienceId,
+        }),
+      };
+
+      // STEP 3
+      utils.comments.byExperienceId.setData(
+        { experienceId: comment.experienceId },
+        (oldData) => {
+          if (!oldData) {
+            return;
+          }
+
+          return oldData.map((comment) =>
+            comment.id === id
+              ? { ...comment, content, updatedAt: new Date().toISOString() }
+              : comment,
+          );
+        },
+      );
+
+      const { dismiss } = toast({
+        title: "Comment updated",
+        description: "Your comment has been updated",
+      });
+
+      return { dismiss, previousData };
     },
-    onError: (error) => {
+    onError: (error, _, context) => {
+      context?.dismiss?.();
+
+      utils.comments.byExperienceId.setData(
+        { experienceId: comment.experienceId },
+        context?.previousData.byExperienceId,
+      );
+
       toast({
         title: "Failed to edit comment",
         description: error.message,
