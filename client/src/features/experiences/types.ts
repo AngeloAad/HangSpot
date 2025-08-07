@@ -12,7 +12,7 @@ type ExperienceWithCommentsCount = Experience & {
   commentsCount: number;
 };
 
-type ExperienceWithAttendeesCount = Experience & {
+type ExperienceWithAttendeesCount = Experience & {  
   attendeesCount: number;
 };
 

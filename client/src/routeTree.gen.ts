@@ -10,274 +10,295 @@
 
 // Import Routes
 
-import { Route as rootRoute } from "./routes/__root";
-import { Route as SettingsImport } from "./routes/settings";
-import { Route as SearchImport } from "./routes/search";
-import { Route as RegisterImport } from "./routes/register";
-import { Route as LoginImport } from "./routes/login";
-import { Route as IndexImport } from "./routes/index";
-import { Route as UsersUserIdIndexImport } from "./routes/users/$userId/index";
-import { Route as ExperiencesExperienceIdIndexImport } from "./routes/experiences/$experienceId/index";
-import { Route as UsersUserIdFollowingImport } from "./routes/users/$userId/following";
-import { Route as UsersUserIdFollowersImport } from "./routes/users/$userId/followers";
-import { Route as ExperiencesExperienceIdEditImport } from "./routes/experiences/$experienceId/edit";
-import { Route as ExperiencesExperienceIdAttendeesImport } from "./routes/experiences/$experienceId/attendees";
+import { Route as rootRoute } from './routes/__root'
+import { Route as SettingsImport } from './routes/settings'
+import { Route as SearchImport } from './routes/search'
+import { Route as RegisterImport } from './routes/register'
+import { Route as LoginImport } from './routes/login'
+import { Route as IndexImport } from './routes/index'
+import { Route as NotificationsIndexImport } from './routes/notifications/index'
+import { Route as UsersUserIdIndexImport } from './routes/users/$userId/index'
+import { Route as ExperiencesExperienceIdIndexImport } from './routes/experiences/$experienceId/index'
+import { Route as UsersUserIdFollowingImport } from './routes/users/$userId/following'
+import { Route as UsersUserIdFollowersImport } from './routes/users/$userId/followers'
+import { Route as ExperiencesExperienceIdEditImport } from './routes/experiences/$experienceId/edit'
+import { Route as ExperiencesExperienceIdAttendeesImport } from './routes/experiences/$experienceId/attendees'
 
 // Create/Update Routes
 
 const SettingsRoute = SettingsImport.update({
-  id: "/settings",
-  path: "/settings",
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const SearchRoute = SearchImport.update({
-  id: "/search",
-  path: "/search",
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const RegisterRoute = RegisterImport.update({
-  id: "/register",
-  path: "/register",
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const LoginRoute = LoginImport.update({
-  id: "/login",
-  path: "/login",
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const IndexRoute = IndexImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
+
+const NotificationsIndexRoute = NotificationsIndexImport.update({
+  id: '/notifications/',
+  path: '/notifications/',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const UsersUserIdIndexRoute = UsersUserIdIndexImport.update({
-  id: "/users/$userId/",
-  path: "/users/$userId/",
+  id: '/users/$userId/',
+  path: '/users/$userId/',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const ExperiencesExperienceIdIndexRoute =
   ExperiencesExperienceIdIndexImport.update({
-    id: "/experiences/$experienceId/",
-    path: "/experiences/$experienceId/",
+    id: '/experiences/$experienceId/',
+    path: '/experiences/$experienceId/',
     getParentRoute: () => rootRoute,
-  } as any);
+  } as any)
 
 const UsersUserIdFollowingRoute = UsersUserIdFollowingImport.update({
-  id: "/users/$userId/following",
-  path: "/users/$userId/following",
+  id: '/users/$userId/following',
+  path: '/users/$userId/following',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const UsersUserIdFollowersRoute = UsersUserIdFollowersImport.update({
-  id: "/users/$userId/followers",
-  path: "/users/$userId/followers",
+  id: '/users/$userId/followers',
+  path: '/users/$userId/followers',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const ExperiencesExperienceIdEditRoute =
   ExperiencesExperienceIdEditImport.update({
-    id: "/experiences/$experienceId/edit",
-    path: "/experiences/$experienceId/edit",
+    id: '/experiences/$experienceId/edit',
+    path: '/experiences/$experienceId/edit',
     getParentRoute: () => rootRoute,
-  } as any);
+  } as any)
 
 const ExperiencesExperienceIdAttendeesRoute =
   ExperiencesExperienceIdAttendeesImport.update({
-    id: "/experiences/$experienceId/attendees",
-    path: "/experiences/$experienceId/attendees",
+    id: '/experiences/$experienceId/attendees',
+    path: '/experiences/$experienceId/attendees',
     getParentRoute: () => rootRoute,
-  } as any);
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/login": {
-      id: "/login";
-      path: "/login";
-      fullPath: "/login";
-      preLoaderRoute: typeof LoginImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/register": {
-      id: "/register";
-      path: "/register";
-      fullPath: "/register";
-      preLoaderRoute: typeof RegisterImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/search": {
-      id: "/search";
-      path: "/search";
-      fullPath: "/search";
-      preLoaderRoute: typeof SearchImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/settings": {
-      id: "/settings";
-      path: "/settings";
-      fullPath: "/settings";
-      preLoaderRoute: typeof SettingsImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/experiences/$experienceId/attendees": {
-      id: "/experiences/$experienceId/attendees";
-      path: "/experiences/$experienceId/attendees";
-      fullPath: "/experiences/$experienceId/attendees";
-      preLoaderRoute: typeof ExperiencesExperienceIdAttendeesImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/experiences/$experienceId/edit": {
-      id: "/experiences/$experienceId/edit";
-      path: "/experiences/$experienceId/edit";
-      fullPath: "/experiences/$experienceId/edit";
-      preLoaderRoute: typeof ExperiencesExperienceIdEditImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/users/$userId/followers": {
-      id: "/users/$userId/followers";
-      path: "/users/$userId/followers";
-      fullPath: "/users/$userId/followers";
-      preLoaderRoute: typeof UsersUserIdFollowersImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/users/$userId/following": {
-      id: "/users/$userId/following";
-      path: "/users/$userId/following";
-      fullPath: "/users/$userId/following";
-      preLoaderRoute: typeof UsersUserIdFollowingImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/experiences/$experienceId/": {
-      id: "/experiences/$experienceId/";
-      path: "/experiences/$experienceId";
-      fullPath: "/experiences/$experienceId";
-      preLoaderRoute: typeof ExperiencesExperienceIdIndexImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/users/$userId/": {
-      id: "/users/$userId/";
-      path: "/users/$userId";
-      fullPath: "/users/$userId";
-      preLoaderRoute: typeof UsersUserIdIndexImport;
-      parentRoute: typeof rootRoute;
-    };
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterImport
+      parentRoute: typeof rootRoute
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchImport
+      parentRoute: typeof rootRoute
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsImport
+      parentRoute: typeof rootRoute
+    }
+    '/notifications/': {
+      id: '/notifications/'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/experiences/$experienceId/attendees': {
+      id: '/experiences/$experienceId/attendees'
+      path: '/experiences/$experienceId/attendees'
+      fullPath: '/experiences/$experienceId/attendees'
+      preLoaderRoute: typeof ExperiencesExperienceIdAttendeesImport
+      parentRoute: typeof rootRoute
+    }
+    '/experiences/$experienceId/edit': {
+      id: '/experiences/$experienceId/edit'
+      path: '/experiences/$experienceId/edit'
+      fullPath: '/experiences/$experienceId/edit'
+      preLoaderRoute: typeof ExperiencesExperienceIdEditImport
+      parentRoute: typeof rootRoute
+    }
+    '/users/$userId/followers': {
+      id: '/users/$userId/followers'
+      path: '/users/$userId/followers'
+      fullPath: '/users/$userId/followers'
+      preLoaderRoute: typeof UsersUserIdFollowersImport
+      parentRoute: typeof rootRoute
+    }
+    '/users/$userId/following': {
+      id: '/users/$userId/following'
+      path: '/users/$userId/following'
+      fullPath: '/users/$userId/following'
+      preLoaderRoute: typeof UsersUserIdFollowingImport
+      parentRoute: typeof rootRoute
+    }
+    '/experiences/$experienceId/': {
+      id: '/experiences/$experienceId/'
+      path: '/experiences/$experienceId'
+      fullPath: '/experiences/$experienceId'
+      preLoaderRoute: typeof ExperiencesExperienceIdIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/users/$userId/': {
+      id: '/users/$userId/'
+      path: '/users/$userId'
+      fullPath: '/users/$userId'
+      preLoaderRoute: typeof UsersUserIdIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/login": typeof LoginRoute;
-  "/register": typeof RegisterRoute;
-  "/search": typeof SearchRoute;
-  "/settings": typeof SettingsRoute;
-  "/experiences/$experienceId/attendees": typeof ExperiencesExperienceIdAttendeesRoute;
-  "/experiences/$experienceId/edit": typeof ExperiencesExperienceIdEditRoute;
-  "/users/$userId/followers": typeof UsersUserIdFollowersRoute;
-  "/users/$userId/following": typeof UsersUserIdFollowingRoute;
-  "/experiences/$experienceId": typeof ExperiencesExperienceIdIndexRoute;
-  "/users/$userId": typeof UsersUserIdIndexRoute;
+  '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
+  '/notifications': typeof NotificationsIndexRoute
+  '/experiences/$experienceId/attendees': typeof ExperiencesExperienceIdAttendeesRoute
+  '/experiences/$experienceId/edit': typeof ExperiencesExperienceIdEditRoute
+  '/users/$userId/followers': typeof UsersUserIdFollowersRoute
+  '/users/$userId/following': typeof UsersUserIdFollowingRoute
+  '/experiences/$experienceId': typeof ExperiencesExperienceIdIndexRoute
+  '/users/$userId': typeof UsersUserIdIndexRoute
 }
 
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/login": typeof LoginRoute;
-  "/register": typeof RegisterRoute;
-  "/search": typeof SearchRoute;
-  "/settings": typeof SettingsRoute;
-  "/experiences/$experienceId/attendees": typeof ExperiencesExperienceIdAttendeesRoute;
-  "/experiences/$experienceId/edit": typeof ExperiencesExperienceIdEditRoute;
-  "/users/$userId/followers": typeof UsersUserIdFollowersRoute;
-  "/users/$userId/following": typeof UsersUserIdFollowingRoute;
-  "/experiences/$experienceId": typeof ExperiencesExperienceIdIndexRoute;
-  "/users/$userId": typeof UsersUserIdIndexRoute;
+  '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
+  '/notifications': typeof NotificationsIndexRoute
+  '/experiences/$experienceId/attendees': typeof ExperiencesExperienceIdAttendeesRoute
+  '/experiences/$experienceId/edit': typeof ExperiencesExperienceIdEditRoute
+  '/users/$userId/followers': typeof UsersUserIdFollowersRoute
+  '/users/$userId/following': typeof UsersUserIdFollowingRoute
+  '/experiences/$experienceId': typeof ExperiencesExperienceIdIndexRoute
+  '/users/$userId': typeof UsersUserIdIndexRoute
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute;
-  "/": typeof IndexRoute;
-  "/login": typeof LoginRoute;
-  "/register": typeof RegisterRoute;
-  "/search": typeof SearchRoute;
-  "/settings": typeof SettingsRoute;
-  "/experiences/$experienceId/attendees": typeof ExperiencesExperienceIdAttendeesRoute;
-  "/experiences/$experienceId/edit": typeof ExperiencesExperienceIdEditRoute;
-  "/users/$userId/followers": typeof UsersUserIdFollowersRoute;
-  "/users/$userId/following": typeof UsersUserIdFollowingRoute;
-  "/experiences/$experienceId/": typeof ExperiencesExperienceIdIndexRoute;
-  "/users/$userId/": typeof UsersUserIdIndexRoute;
+  __root__: typeof rootRoute
+  '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/search': typeof SearchRoute
+  '/settings': typeof SettingsRoute
+  '/notifications/': typeof NotificationsIndexRoute
+  '/experiences/$experienceId/attendees': typeof ExperiencesExperienceIdAttendeesRoute
+  '/experiences/$experienceId/edit': typeof ExperiencesExperienceIdEditRoute
+  '/users/$userId/followers': typeof UsersUserIdFollowersRoute
+  '/users/$userId/following': typeof UsersUserIdFollowingRoute
+  '/experiences/$experienceId/': typeof ExperiencesExperienceIdIndexRoute
+  '/users/$userId/': typeof UsersUserIdIndexRoute
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | "/login"
-    | "/register"
-    | "/search"
-    | "/settings"
-    | "/experiences/$experienceId/attendees"
-    | "/experiences/$experienceId/edit"
-    | "/users/$userId/followers"
-    | "/users/$userId/following"
-    | "/experiences/$experienceId"
-    | "/users/$userId";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | '/login'
+    | '/register'
+    | '/search'
+    | '/settings'
+    | '/notifications'
+    | '/experiences/$experienceId/attendees'
+    | '/experiences/$experienceId/edit'
+    | '/users/$userId/followers'
+    | '/users/$userId/following'
+    | '/experiences/$experienceId'
+    | '/users/$userId'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | "/login"
-    | "/register"
-    | "/search"
-    | "/settings"
-    | "/experiences/$experienceId/attendees"
-    | "/experiences/$experienceId/edit"
-    | "/users/$userId/followers"
-    | "/users/$userId/following"
-    | "/experiences/$experienceId"
-    | "/users/$userId";
+    | '/'
+    | '/login'
+    | '/register'
+    | '/search'
+    | '/settings'
+    | '/notifications'
+    | '/experiences/$experienceId/attendees'
+    | '/experiences/$experienceId/edit'
+    | '/users/$userId/followers'
+    | '/users/$userId/following'
+    | '/experiences/$experienceId'
+    | '/users/$userId'
   id:
-    | "__root__"
-    | "/"
-    | "/login"
-    | "/register"
-    | "/search"
-    | "/settings"
-    | "/experiences/$experienceId/attendees"
-    | "/experiences/$experienceId/edit"
-    | "/users/$userId/followers"
-    | "/users/$userId/following"
-    | "/experiences/$experienceId/"
-    | "/users/$userId/";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/register'
+    | '/search'
+    | '/settings'
+    | '/notifications/'
+    | '/experiences/$experienceId/attendees'
+    | '/experiences/$experienceId/edit'
+    | '/users/$userId/followers'
+    | '/users/$userId/following'
+    | '/experiences/$experienceId/'
+    | '/users/$userId/'
+  fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  LoginRoute: typeof LoginRoute;
-  RegisterRoute: typeof RegisterRoute;
-  SearchRoute: typeof SearchRoute;
-  SettingsRoute: typeof SettingsRoute;
-  ExperiencesExperienceIdAttendeesRoute: typeof ExperiencesExperienceIdAttendeesRoute;
-  ExperiencesExperienceIdEditRoute: typeof ExperiencesExperienceIdEditRoute;
-  UsersUserIdFollowersRoute: typeof UsersUserIdFollowersRoute;
-  UsersUserIdFollowingRoute: typeof UsersUserIdFollowingRoute;
-  ExperiencesExperienceIdIndexRoute: typeof ExperiencesExperienceIdIndexRoute;
-  UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute;
+  IndexRoute: typeof IndexRoute
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
+  SearchRoute: typeof SearchRoute
+  SettingsRoute: typeof SettingsRoute
+  NotificationsIndexRoute: typeof NotificationsIndexRoute
+  ExperiencesExperienceIdAttendeesRoute: typeof ExperiencesExperienceIdAttendeesRoute
+  ExperiencesExperienceIdEditRoute: typeof ExperiencesExperienceIdEditRoute
+  UsersUserIdFollowersRoute: typeof UsersUserIdFollowersRoute
+  UsersUserIdFollowingRoute: typeof UsersUserIdFollowingRoute
+  ExperiencesExperienceIdIndexRoute: typeof ExperiencesExperienceIdIndexRoute
+  UsersUserIdIndexRoute: typeof UsersUserIdIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -286,17 +307,18 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   SearchRoute: SearchRoute,
   SettingsRoute: SettingsRoute,
+  NotificationsIndexRoute: NotificationsIndexRoute,
   ExperiencesExperienceIdAttendeesRoute: ExperiencesExperienceIdAttendeesRoute,
   ExperiencesExperienceIdEditRoute: ExperiencesExperienceIdEditRoute,
   UsersUserIdFollowersRoute: UsersUserIdFollowersRoute,
   UsersUserIdFollowingRoute: UsersUserIdFollowingRoute,
   ExperiencesExperienceIdIndexRoute: ExperiencesExperienceIdIndexRoute,
   UsersUserIdIndexRoute: UsersUserIdIndexRoute,
-};
+}
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
 /* ROUTE_MANIFEST_START
 {
@@ -309,6 +331,7 @@ export const routeTree = rootRoute
         "/register",
         "/search",
         "/settings",
+        "/notifications/",
         "/experiences/$experienceId/attendees",
         "/experiences/$experienceId/edit",
         "/users/$userId/followers",
@@ -331,6 +354,9 @@ export const routeTree = rootRoute
     },
     "/settings": {
       "filePath": "settings.tsx"
+    },
+    "/notifications/": {
+      "filePath": "notifications/index.tsx"
     },
     "/experiences/$experienceId/attendees": {
       "filePath": "experiences/$experienceId/attendees.tsx"

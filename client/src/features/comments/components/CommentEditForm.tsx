@@ -1,4 +1,3 @@
-import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { Button } from "@/features/shared/components/ui/Button";
 import {
   Form,
@@ -15,7 +14,6 @@ import { commentValidationSchema } from "@advanced-react/shared/schema/comment";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CommentOptimistic } from "../type";
 
 type CommentEditFormData = z.infer<typeof commentValidationSchema>;
 
@@ -30,8 +28,6 @@ export function CommentEditForm({
 }: CommentEditFormProps) {
   const utils = trpc.useUtils();
   const { toast } = useToast();
-
-  const { currentUser } = useCurrentUser();
 
   const form = useForm<CommentEditFormData>({
     resolver: zodResolver(commentValidationSchema),

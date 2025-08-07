@@ -8,11 +8,10 @@ import { router, trpc } from "@/router";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/settings")({
-  
   component: SettingsPage,
   loader: async ({ context: { trpcQueryUtils } }) => {
     const { currentUser } = await trpcQueryUtils.auth.currentUser.ensureData();
-    
+
     if (!currentUser) {
       return redirect({ to: "/login" });
     }
@@ -28,6 +27,8 @@ function SettingsPage() {
   const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: async () => {
       await utils.auth.currentUser.invalidate();
+
+      await utils.notifications.unreadCount.reset();
 
       toast({
         title: "Logged out",
