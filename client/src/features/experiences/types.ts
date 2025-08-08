@@ -6,6 +6,7 @@ type ExperienceWithUser = Experience & {
 
 type ExperienceWithUserContext = Experience & {
   isAttending: boolean;
+  isFavorited: boolean;
 };
 
 type ExperienceWithCommentsCount = Experience & {

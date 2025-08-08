@@ -7,6 +7,7 @@ import { UserAvatar } from "@/features/users/components/UserAvatar";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import ExperienceDeleteDialog from "./ExperienceDeleteDialog";
 import ExperienceAttendButton from "./ExperienceAttendButton";
+import ExperienceFavoriteButton from "./ExperienceFavoriteButton";
 
 type ExperienceCardProps = {
   experience: ExperienceForList;
@@ -166,10 +167,17 @@ function ExperienceCardActionButtons({
 
   if (currentUser) {
     return (
-      <ExperienceAttendButton
-        experienceId={experience.id}
-        isAttending={experience.isAttending}
-      />
+      <div className="flex gap-4">
+        <ExperienceAttendButton
+          experienceId={experience.id}
+          isAttending={experience.isAttending}
+        />
+
+        <ExperienceFavoriteButton
+          experienceId={experience.id}
+          isFavorited={experience.isFavorited}
+        />
+      </div>
     );
   }
 
