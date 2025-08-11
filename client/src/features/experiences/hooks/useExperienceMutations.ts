@@ -52,6 +52,7 @@ export function useExperienceMutations(
           : []),
         ...(pathQ ? [utils.experiences.search.invalidate({ q: pathQ })] : []),
         utils.users.byId.invalidate({}),
+        utils.experiences.favorites.invalidate(),
       ]);
 
       toast({
@@ -97,6 +98,7 @@ export function useExperienceMutations(
           ? [utils.experiences.byUserId.cancel({ id: pathUserId })]
           : []),
         ...(pathQ ? [utils.experiences.search.cancel({ q: pathQ })] : []),
+        utils.experiences.favorites.cancel(),
       ]);
 
       // STEP 2
@@ -109,6 +111,7 @@ export function useExperienceMutations(
         search: pathQ
           ? utils.experiences.search.getInfiniteData({ q: pathQ })
           : undefined,
+        favorites: utils.experiences.favorites.getInfiniteData(),
       };
 
       // STEP 3
@@ -175,6 +178,22 @@ export function useExperienceMutations(
         });
       }
 
+      utils.experiences.favorites.setInfiniteData({}, (oldData) => {
+        if (!oldData) {
+          return;
+        }
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            experiences: page.experiences.map((e) =>
+              e.id === id ? updateExperience(e) : e,
+            ),
+          })),
+        };
+      });
+
       return { previousData };
     },
     onError: (error, { id }, context) => {
@@ -192,6 +211,10 @@ export function useExperienceMutations(
           context?.previousData.search,
         );
       }
+      utils.experiences.favorites.setInfiniteData(
+        {},
+        context?.previousData.favorites,
+      );
 
       toast({
         title: "Failed to attend experience",
@@ -219,6 +242,155 @@ export function useExperienceMutations(
               (a) => a.id !== currentUser?.id,
             ),
           }),
+        };
+      }
+
+      // STEP 1
+      await Promise.all([
+        utils.experiences.byId.cancel({ id }),
+        utils.experiences.feed.cancel(),
+        ...(pathUserId
+          ? [utils.experiences.byUserId.cancel({ id: pathUserId })]
+          : []),
+        ...(pathQ ? [utils.experiences.search.cancel({ q: pathQ })] : []),
+        utils.experiences.favorites.cancel(),
+      ]);
+
+      // STEP 2
+      const previousData = {
+        byId: utils.experiences.byId.getData({ id }),
+        feed: utils.experiences.feed.getInfiniteData(),
+        byUserId: pathUserId
+          ? utils.experiences.byUserId.getInfiniteData({ id: pathUserId })
+          : undefined,
+        search: pathQ
+          ? utils.experiences.search.getInfiniteData({ q: pathQ })
+          : undefined,
+        favorites: utils.experiences.favorites.getInfiniteData(),
+      };
+
+      // STEP 3
+      utils.experiences.byId.setData({ id }, (oldData) => {
+        if (!oldData) {
+          return;
+        }
+
+        return updateExperience(oldData);
+      });
+
+      utils.experiences.feed.setInfiniteData({}, (oldData) => {
+        if (!oldData) {
+          return;
+        }
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            experiences: page.experiences.map((e) =>
+              e.id === id ? updateExperience(e) : e,
+            ),
+          })),
+        };
+      });
+
+      if (pathUserId) {
+        utils.experiences.byUserId.setInfiniteData(
+          { id: pathUserId },
+          (oldData) => {
+            if (!oldData) {
+              return;
+            }
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                experiences: page.experiences.map((e) =>
+                  e.id === id ? updateExperience(e) : e,
+                ),
+              })),
+            };
+          },
+        );
+      }
+
+      if (pathQ) {
+        utils.experiences.search.setInfiniteData({ q: pathQ }, (oldData) => {
+          if (!oldData) {
+            return;
+          }
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              experiences: page.experiences.map((e) =>
+                e.id === id ? updateExperience(e) : e,
+              ),
+            })),
+          };
+        });
+      }
+
+      utils.experiences.favorites.setInfiniteData({}, (oldData) => {
+        if (!oldData) {
+          return;
+        }
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            experiences: page.experiences.map((e) =>
+              e.id === id ? updateExperience(e) : e,
+            ),
+          })),
+        };
+      });
+
+      return { previousData };
+    },
+    onError: (error, { id }, context) => {
+      utils.experiences.byId.setData({ id }, context?.previousData.byId);
+      utils.experiences.feed.setInfiniteData({}, context?.previousData.feed);
+      if (pathUserId) {
+        utils.experiences.byUserId.setInfiniteData(
+          { id: pathUserId },
+          context?.previousData.byUserId,
+        );
+      }
+      if (pathQ) {
+        utils.experiences.search.setInfiniteData(
+          { q: pathQ },
+          context?.previousData.search,
+        );
+      }
+      utils.experiences.favorites.setInfiniteData(
+        {},
+        context?.previousData.favorites,
+      );
+
+      toast({
+        title: "Failed to unattend experience",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const favoriteExperienceMutation = trpc.experiences.favorite.useMutation({
+    onMutate: async ({ id }) => {
+      function updateExperience<
+        T extends {
+          isFavorited: boolean;
+          favoritesCount: number;
+        },
+      >(oldData: T) {
+        return {
+          ...oldData,
+          isFavorited: true,
+          favoritesCount: oldData.favoritesCount + 1,
         };
       }
 
@@ -327,7 +499,154 @@ export function useExperienceMutations(
       }
 
       toast({
-        title: "Failed to unattend experience",
+        title: "Failed to favorite experience",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const unfavoriteExperienceMutation = trpc.experiences.unfavorite.useMutation({
+    onMutate: async ({ id }) => {
+      function updateExperience<
+        T extends {
+          isFavorited: boolean;
+          favoritesCount: number;
+        },
+      >(oldData: T) {
+        return {
+          ...oldData,
+          isFavorited: false,
+          favoritesCount: Math.max(0, oldData.favoritesCount - 1),
+        };
+      }
+
+      // STEP 1
+      await Promise.all([
+        utils.experiences.byId.cancel({ id }),
+        utils.experiences.feed.cancel(),
+        ...(pathUserId
+          ? [utils.experiences.byUserId.cancel({ id: pathUserId })]
+          : []),
+        ...(pathQ ? [utils.experiences.search.cancel({ q: pathQ })] : []),
+        utils.experiences.favorites.cancel(),
+      ]);
+
+      // STEP 2
+      const previousData = {
+        byId: utils.experiences.byId.getData({ id }),
+        feed: utils.experiences.feed.getInfiniteData(),
+        byUserId: pathUserId
+          ? utils.experiences.byUserId.getInfiniteData({ id: pathUserId })
+          : undefined,
+        search: pathQ
+          ? utils.experiences.search.getInfiniteData({ q: pathQ })
+          : undefined,
+        favorites: utils.experiences.favorites.getInfiniteData(),
+      };
+
+      // STEP 3
+      utils.experiences.byId.setData({ id }, (oldData) => {
+        if (!oldData) {
+          return;
+        }
+
+        return updateExperience(oldData);
+      });
+
+      utils.experiences.feed.setInfiniteData({}, (oldData) => {
+        if (!oldData) {
+          return;
+        }
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            experiences: page.experiences.map((e) =>
+              e.id === id ? updateExperience(e) : e,
+            ),
+          })),
+        };
+      });
+
+      if (pathUserId) {
+        utils.experiences.byUserId.setInfiniteData(
+          { id: pathUserId },
+          (oldData) => {
+            if (!oldData) {
+              return;
+            }
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                experiences: page.experiences.map((e) =>
+                  e.id === id ? updateExperience(e) : e,
+                ),
+              })),
+            };
+          },
+        );
+      }
+
+      if (pathQ) {
+        utils.experiences.search.setInfiniteData({ q: pathQ }, (oldData) => {
+          if (!oldData) {
+            return;
+          }
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              experiences: page.experiences.map((e) =>
+                e.id === id ? updateExperience(e) : e,
+              ),
+            })),
+          };
+        });
+      }
+
+      utils.experiences.favorites.setInfiniteData({}, (oldData) => {
+        if (!oldData) {
+          return;
+        }
+
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page) => ({
+            ...page,
+            experiences: page.experiences.filter((e) => e.id !== id),
+          })),
+        };
+      });
+
+      return { previousData };
+    },
+    onError: (error, { id }, context) => {
+      utils.experiences.byId.setData({ id }, context?.previousData.byId);
+      utils.experiences.feed.setInfiniteData({}, context?.previousData.feed);
+      utils.experiences.favorites.setInfiniteData(
+        {},
+        context?.previousData.favorites,
+      );
+      if (pathUserId) {
+        utils.experiences.byUserId.setInfiniteData(
+          { id: pathUserId },
+          context?.previousData.byUserId,
+        );
+      }
+      if (pathQ) {
+        utils.experiences.search.setInfiniteData(
+          { q: pathQ },
+          context?.previousData.search,
+        );
+      }
+
+      toast({
+        title: "Failed to unfavorite experience",
         description: error.message,
         variant: "destructive",
       });
@@ -339,5 +658,7 @@ export function useExperienceMutations(
     deleteExperienceMutation,
     attendExperienceMutation,
     unattendExperienceMutation,
+    favoriteExperienceMutation,
+    unfavoriteExperienceMutation,
   };
 }

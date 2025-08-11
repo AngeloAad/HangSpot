@@ -1,4 +1,4 @@
-import { Bell, Home, LogIn, Search, Settings, User } from "lucide-react";
+import { Bell, Heart, Home, LogIn, Search, Settings, User } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import Link from "./ui/Link";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
@@ -37,6 +37,16 @@ export default function Navigation() {
         <Search className="h-6 w-6" />
         Search
       </Link>
+      
+      <Link
+        to="/favorites"
+        variant="ghost"
+        className={navLinkClassName}
+        activeProps={{ className: activeNavLinkClassName }}
+      >
+        <Heart className="h-6 w-6" />
+        Favorites
+      </Link>
 
       {currentUser && (
         <Link
@@ -53,7 +63,7 @@ export default function Navigation() {
             Notifications
           </div>
           {unreadCountQuery.data && unreadCountQuery.data > 0 ? (
-            <div className="text-xs flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-white">
+            <div className="flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs text-white">
               {unreadCountQuery.data}
             </div>
           ) : undefined}

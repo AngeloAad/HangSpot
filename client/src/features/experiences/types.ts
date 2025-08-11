@@ -6,14 +6,19 @@ type ExperienceWithUser = Experience & {
 
 type ExperienceWithUserContext = Experience & {
   isAttending: boolean;
+  isFavorited: boolean;
 };
 
 type ExperienceWithCommentsCount = Experience & {
   commentsCount: number;
 };
 
-type ExperienceWithAttendeesCount = Experience & {  
+type ExperienceWithAttendeesCount = Experience & {
   attendeesCount: number;
+};
+
+type ExperienceWithFavoritesCount = Experience & {
+  favoritesCount: number;
 };
 
 type ExperienceWithAttendees = Experience & {
@@ -23,10 +28,12 @@ type ExperienceWithAttendees = Experience & {
 export type ExperienceForList = ExperienceWithUser &
   ExperienceWithUserContext &
   ExperienceWithCommentsCount &
-  ExperienceWithAttendeesCount;
+  ExperienceWithAttendeesCount &
+  ExperienceWithFavoritesCount;
 
 export type ExperienceForDetails = ExperienceWithUser &
   ExperienceWithUserContext &
   ExperienceWithCommentsCount &
   ExperienceWithAttendeesCount &
+  ExperienceWithFavoritesCount &
   ExperienceWithAttendees;

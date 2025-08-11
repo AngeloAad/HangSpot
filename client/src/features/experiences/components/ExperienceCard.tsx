@@ -7,6 +7,7 @@ import { UserAvatar } from "@/features/users/components/UserAvatar";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import ExperienceDeleteDialog from "./ExperienceDeleteDialog";
 import ExperienceAttendButton from "./ExperienceAttendButton";
+import ExperienceFavoriteButton from "./ExperienceFavoriteButton";
 
 type ExperienceCardProps = {
   experience: ExperienceForList;
@@ -123,13 +124,19 @@ function ExperienceCardMetricButtons({
   experience,
 }: ExperienceCardMetricButtonsProps) {
   return (
-    <div className="flex items-center gap-6">
+    <div className="flex items-center gap-4">
+      <ExperienceFavoriteButton
+        experienceId={experience.id}
+        isFavorited={experience.isFavorited}
+        favoritesCount={experience.favoritesCount}
+      />
+
       <Button variant="link" asChild>
         <Link
           to="/experiences/$experienceId/attendees"
           params={{ experienceId: experience.id }}
           variant="ghost"
-          className="flex items-center gap-0.5"
+          className="flex items-center"
         >
           <User className="h-5 w-5" />
           <span>{experience.attendeesCount}</span>
@@ -141,7 +148,7 @@ function ExperienceCardMetricButtons({
           to="/experiences/$experienceId"
           params={{ experienceId: experience.id }}
           variant="ghost"
-          className="flex items-center gap-1"
+          className="flex items-center"
         >
           <MessageSquare className="h-5 w-5" />
           <span>{experience.commentsCount}</span>
