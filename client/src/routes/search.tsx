@@ -1,4 +1,4 @@
-import { trpc } from "@/router";
+import { trpc, trpcQueryUtils } from "@/router";
 import { createFileRoute } from "@tanstack/react-router";
 import { experienceFiltersSchema } from "@advanced-react/shared/schema/experience";
 
@@ -7,8 +7,11 @@ import { ExperienceList } from "@/features/experiences/components/ExperienceList
 import { ExperienceFilters } from "@/features/experiences/components/ExperienceFilters";
 
 export const Route = createFileRoute("/search")({
-  component: SearchPage,
+  loader: async ({ context: { trpcQueryUtils } }) => {
+    await trpcQueryUtils.tags.list.ensureData();
+  },
   validateSearch: experienceFiltersSchema,
+  component: SearchPage,
 });
 
 function SearchPage() {
@@ -17,12 +20,14 @@ function SearchPage() {
 
   const experiencesQuery = trpc.experiences.search.useInfiniteQuery(search, {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    enabled: !!search.q,
+    enabled: !!search.q || !!search.tags,
   });
+
+  const [tags] = trpc.tags.list.useSuspenseQuery();
 
   return (
     <main className="space-y-4">
-      <div className="bg-neutral-100 dark:bg-neutral-800 p-4 rounded-lg">
+      <div className="rounded-lg bg-neutral-100 p-4 dark:bg-neutral-800">
         <ExperienceFilters
           onFiltersChange={(filters) => {
             navigate({
@@ -30,6 +35,7 @@ function SearchPage() {
             });
           }}
           initialFilters={search}
+          tags={tags}
         />
       </div>
       <InfiniteScroll

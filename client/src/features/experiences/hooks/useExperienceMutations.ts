@@ -21,7 +21,10 @@ export function useExperienceMutations(
   const { currentUser } = useCurrentUser();
 
   const { userId: pathUserId } = useParams({ strict: false });
+  const { tagId: pathTagId } = useParams({ strict: false });
+
   const { q: pathQ } = useSearch({ strict: false });
+  const { tags: pathTags } = useSearch({ strict: false });
 
   const editExperienceMutation = trpc.experiences.edit.useMutation({
     onSuccess: async ({ id }) => {
@@ -50,9 +53,14 @@ export function useExperienceMutations(
         ...(pathUserId
           ? [utils.experiences.byUserId.invalidate({ id: pathUserId })]
           : []),
-        ...(pathQ ? [utils.experiences.search.invalidate({ q: pathQ })] : []),
+        ...(pathQ || pathTags
+          ? [utils.experiences.search.invalidate({ q: pathQ, tags: pathTags })]
+          : []),
         utils.users.byId.invalidate({}),
         utils.experiences.favorites.invalidate(),
+        ...(pathTagId
+          ? [utils.experiences.byTagId.invalidate({ id: pathTagId })]
+          : []),
       ]);
 
       toast({
@@ -97,8 +105,13 @@ export function useExperienceMutations(
         ...(pathUserId
           ? [utils.experiences.byUserId.cancel({ id: pathUserId })]
           : []),
-        ...(pathQ ? [utils.experiences.search.cancel({ q: pathQ })] : []),
+        ...(pathQ || pathTags
+          ? [utils.experiences.search.cancel({ q: pathQ, tags: pathTags })]
+          : []),
         utils.experiences.favorites.cancel(),
+        ...(pathTagId
+          ? [utils.experiences.byTagId.cancel({ id: pathTagId })]
+          : []),
       ]);
 
       // STEP 2
@@ -108,10 +121,13 @@ export function useExperienceMutations(
         byUserId: pathUserId
           ? utils.experiences.byUserId.getInfiniteData({ id: pathUserId })
           : undefined,
-        search: pathQ
-          ? utils.experiences.search.getInfiniteData({ q: pathQ })
+        search: pathQ || pathTags
+          ? utils.experiences.search.getInfiniteData({ q: pathQ, tags: pathTags })
           : undefined,
         favorites: utils.experiences.favorites.getInfiniteData(),
+        byTagId: pathTagId
+          ? utils.experiences.byTagId.getInfiniteData({ id: pathTagId })
+          : undefined,
       };
 
       // STEP 3
@@ -160,8 +176,8 @@ export function useExperienceMutations(
         );
       }
 
-      if (pathQ) {
-        utils.experiences.search.setInfiniteData({ q: pathQ }, (oldData) => {
+      if (pathQ || pathTags) {
+        utils.experiences.search.setInfiniteData({ q: pathQ, tags: pathTags }, (oldData) => {
           if (!oldData) {
             return;
           }
@@ -194,6 +210,27 @@ export function useExperienceMutations(
         };
       });
 
+      if (pathTagId) {
+        utils.experiences.byTagId.setInfiniteData(
+          { id: pathTagId },
+          (oldData) => {
+            if (!oldData) {
+              return;
+            }
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                experiences: page.experiences.map((e) =>
+                  e.id === id ? updateExperience(e) : e,
+                ),
+              })),
+            };
+          },
+        );
+      }
+
       return { previousData };
     },
     onError: (error, { id }, context) => {
@@ -205,9 +242,9 @@ export function useExperienceMutations(
           context?.previousData.byUserId,
         );
       }
-      if (pathQ) {
+      if (pathQ || pathTags) {
         utils.experiences.search.setInfiniteData(
-          { q: pathQ },
+          { q: pathQ, tags: pathTags },
           context?.previousData.search,
         );
       }
@@ -215,6 +252,12 @@ export function useExperienceMutations(
         {},
         context?.previousData.favorites,
       );
+      if (pathTagId) {
+        utils.experiences.byTagId.setInfiniteData(
+          { id: pathTagId },
+          context?.previousData.byTagId,
+        );
+      }
 
       toast({
         title: "Failed to attend experience",
@@ -252,8 +295,13 @@ export function useExperienceMutations(
         ...(pathUserId
           ? [utils.experiences.byUserId.cancel({ id: pathUserId })]
           : []),
-        ...(pathQ ? [utils.experiences.search.cancel({ q: pathQ })] : []),
+        ...(pathQ || pathTags
+          ? [utils.experiences.search.cancel({ q: pathQ, tags: pathTags })]
+          : []),
         utils.experiences.favorites.cancel(),
+        ...(pathTagId
+          ? [utils.experiences.byTagId.cancel({ id: pathTagId })]
+          : []),
       ]);
 
       // STEP 2
@@ -263,10 +311,13 @@ export function useExperienceMutations(
         byUserId: pathUserId
           ? utils.experiences.byUserId.getInfiniteData({ id: pathUserId })
           : undefined,
-        search: pathQ
-          ? utils.experiences.search.getInfiniteData({ q: pathQ })
+        search: pathQ || pathTags
+          ? utils.experiences.search.getInfiniteData({ q: pathQ, tags: pathTags })
           : undefined,
         favorites: utils.experiences.favorites.getInfiniteData(),
+        byTagId: pathTagId
+          ? utils.experiences.byTagId.getInfiniteData({ id: pathTagId })
+          : undefined,
       };
 
       // STEP 3
@@ -315,8 +366,8 @@ export function useExperienceMutations(
         );
       }
 
-      if (pathQ) {
-        utils.experiences.search.setInfiniteData({ q: pathQ }, (oldData) => {
+      if (pathQ || pathTags) {
+        utils.experiences.search.setInfiniteData({ q: pathQ, tags: pathTags }, (oldData) => {
           if (!oldData) {
             return;
           }
@@ -349,6 +400,27 @@ export function useExperienceMutations(
         };
       });
 
+      if (pathTagId) {
+        utils.experiences.byTagId.setInfiniteData(
+          { id: pathTagId },
+          (oldData) => {
+            if (!oldData) {
+              return;
+            }
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                experiences: page.experiences.map((e) =>
+                  e.id === id ? updateExperience(e) : e,
+                ),
+              })),
+            };
+          },
+        );
+      }
+
       return { previousData };
     },
     onError: (error, { id }, context) => {
@@ -360,9 +432,9 @@ export function useExperienceMutations(
           context?.previousData.byUserId,
         );
       }
-      if (pathQ) {
+      if (pathQ || pathTags) {
         utils.experiences.search.setInfiniteData(
-          { q: pathQ },
+          { q: pathQ, tags: pathTags },
           context?.previousData.search,
         );
       }
@@ -370,6 +442,12 @@ export function useExperienceMutations(
         {},
         context?.previousData.favorites,
       );
+      if (pathTagId) {
+        utils.experiences.byTagId.setInfiniteData(
+          { id: pathTagId },
+          context?.previousData.byTagId,
+        );
+      }
 
       toast({
         title: "Failed to unattend experience",
@@ -401,7 +479,12 @@ export function useExperienceMutations(
         ...(pathUserId
           ? [utils.experiences.byUserId.cancel({ id: pathUserId })]
           : []),
-        ...(pathQ ? [utils.experiences.search.cancel({ q: pathQ })] : []),
+        ...(pathQ || pathTags
+          ? [utils.experiences.search.cancel({ q: pathQ, tags: pathTags })]
+          : []),
+        ...(pathTagId
+          ? [utils.experiences.byTagId.cancel({ id: pathTagId })]
+          : []),
       ]);
 
       // STEP 2
@@ -411,8 +494,11 @@ export function useExperienceMutations(
         byUserId: pathUserId
           ? utils.experiences.byUserId.getInfiniteData({ id: pathUserId })
           : undefined,
-        search: pathQ
-          ? utils.experiences.search.getInfiniteData({ q: pathQ })
+        search: pathQ || pathTags
+          ? utils.experiences.search.getInfiniteData({ q: pathQ, tags: pathTags })
+          : undefined,
+        byTagId: pathTagId
+          ? utils.experiences.byTagId.getInfiniteData({ id: pathTagId })
           : undefined,
       };
 
@@ -462,8 +548,8 @@ export function useExperienceMutations(
         );
       }
 
-      if (pathQ) {
-        utils.experiences.search.setInfiniteData({ q: pathQ }, (oldData) => {
+      if (pathQ || pathTags) {
+        utils.experiences.search.setInfiniteData({ q: pathQ, tags: pathTags }, (oldData) => {
           if (!oldData) {
             return;
           }
@@ -480,6 +566,27 @@ export function useExperienceMutations(
         });
       }
 
+      if (pathTagId) {
+        utils.experiences.byTagId.setInfiniteData(
+          { id: pathTagId },
+          (oldData) => {
+            if (!oldData) {
+              return;
+            }
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                experiences: page.experiences.map((e) =>
+                  e.id === id ? updateExperience(e) : e,
+                ),
+              })),
+            };
+          },
+        );
+      }
+
       return { previousData };
     },
     onError: (error, { id }, context) => {
@@ -491,10 +598,16 @@ export function useExperienceMutations(
           context?.previousData.byUserId,
         );
       }
-      if (pathQ) {
+      if (pathQ || pathTags) {
         utils.experiences.search.setInfiniteData(
-          { q: pathQ },
+          { q: pathQ, tags: pathTags },
           context?.previousData.search,
+        );
+      }
+      if (pathTagId) {
+        utils.experiences.byTagId.setInfiniteData(
+          { id: pathTagId },
+          context?.previousData.byTagId,
         );
       }
 
@@ -528,8 +641,13 @@ export function useExperienceMutations(
         ...(pathUserId
           ? [utils.experiences.byUserId.cancel({ id: pathUserId })]
           : []),
-        ...(pathQ ? [utils.experiences.search.cancel({ q: pathQ })] : []),
+        ...(pathQ || pathTags
+          ? [utils.experiences.search.cancel({ q: pathQ, tags: pathTags })]
+          : []),
         utils.experiences.favorites.cancel(),
+        ...(pathTagId
+          ? [utils.experiences.byTagId.cancel({ id: pathTagId })]
+          : []),
       ]);
 
       // STEP 2
@@ -539,10 +657,13 @@ export function useExperienceMutations(
         byUserId: pathUserId
           ? utils.experiences.byUserId.getInfiniteData({ id: pathUserId })
           : undefined,
-        search: pathQ
-          ? utils.experiences.search.getInfiniteData({ q: pathQ })
+        search: pathQ || pathTags
+          ? utils.experiences.search.getInfiniteData({ q: pathQ, tags: pathTags })
           : undefined,
         favorites: utils.experiences.favorites.getInfiniteData(),
+        byTagId: pathTagId
+          ? utils.experiences.byTagId.getInfiniteData({ id: pathTagId })
+          : undefined,
       };
 
       // STEP 3
@@ -591,8 +712,8 @@ export function useExperienceMutations(
         );
       }
 
-      if (pathQ) {
-        utils.experiences.search.setInfiniteData({ q: pathQ }, (oldData) => {
+      if (pathQ || pathTags) {
+        utils.experiences.search.setInfiniteData({ q: pathQ, tags: pathTags }, (oldData) => {
           if (!oldData) {
             return;
           }
@@ -623,6 +744,27 @@ export function useExperienceMutations(
         };
       });
 
+      if (pathTagId) {
+        utils.experiences.byTagId.setInfiniteData(
+          { id: pathTagId },
+          (oldData) => {
+            if (!oldData) {
+              return;
+            }
+
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                experiences: page.experiences.map((e) =>
+                  e.id === id ? updateExperience(e) : e,
+                ),
+              })),
+            };
+          },
+        );
+      }
+
       return { previousData };
     },
     onError: (error, { id }, context) => {
@@ -638,10 +780,16 @@ export function useExperienceMutations(
           context?.previousData.byUserId,
         );
       }
-      if (pathQ) {
+      if (pathQ || pathTags) {
         utils.experiences.search.setInfiniteData(
-          { q: pathQ },
+          { q: pathQ, tags: pathTags },
           context?.previousData.search,
+        );
+      }
+      if (pathTagId) {
+        utils.experiences.byUserId.setInfiniteData(
+          { id: pathTagId },
+          context?.previousData.byTagId,
         );
       }
 
