@@ -1,4 +1,5 @@
 import { Button } from "@/features/shared/components/ui/Button";
+import { DateTimePicker } from "@/features/shared/components/ui/DateTimePicker";
 import {
   Form,
   FormControl,
@@ -44,29 +45,48 @@ export function ExperienceFilters({
       filters.tags = values.tags;
     }
 
+    if (values.scheduledAt) {
+      filters.scheduledAt = values.scheduledAt;
+    }
+
     onFiltersChange(filters);
   });
 
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="q"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="search"
-                  value={field.value ?? ""}
-                  placeholder="Search for an Experience"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="flex w-full items-center gap-4">
+          <FormField
+            control={form.control}
+            name="q"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="search"
+                    value={field.value ?? ""}
+                    placeholder="Search for an Experience"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="scheduledAt"
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormControl>
+                  <DateTimePicker {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}

@@ -20,7 +20,7 @@ function SearchPage() {
 
   const experiencesQuery = trpc.experiences.search.useInfiniteQuery(search, {
     getNextPageParam: (lastPage) => lastPage.nextCursor,
-    enabled: !!search.q || !!search.tags,
+    enabled: !!search.q || !!search.tags || !!search.scheduledAt,
   });
 
   const [tags] = trpc.tags.list.useSuspenseQuery();
@@ -39,7 +39,11 @@ function SearchPage() {
         />
       </div>
       <InfiniteScroll
-        onLoadMore={!!search.q ? experiencesQuery.fetchNextPage : undefined}
+        onLoadMore={
+          !!search.q || !!search.tags || !!search.scheduledAt
+            ? experiencesQuery.fetchNextPage
+            : undefined
+        }
       >
         <ExperienceList
           experiences={
@@ -50,7 +54,9 @@ function SearchPage() {
             experiencesQuery.isLoading || experiencesQuery.isFetchingNextPage
           }
           noExperiencesMessage={
-            !!search.q ? "No experiences found" : "Search to find experiences"
+            !!search.q || !!search.tags || !!search.scheduledAt
+              ? "No experiences found"
+              : "Search to find experiences"
           }
         />
       </InfiniteScroll>
