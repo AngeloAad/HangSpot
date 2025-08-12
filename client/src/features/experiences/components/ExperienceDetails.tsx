@@ -10,6 +10,8 @@ import ExperienceAttendButton from "./ExperienceAttendButton";
 import { UserAvatarList } from "@/features/users/components/UserAvatarList";
 import ExperienceFavoriteButton from "./ExperienceFavoriteButton";
 import { TagList } from "@/features/tags/components/TagList";
+import { LocationData } from "@advanced-react/shared/schema/experience";
+import { LocationDisplay } from "@/features/shared/components/LocationDisplay";
 
 type ExperienceDetailsProps = {
   experience: ExperienceForDetails;
@@ -22,10 +24,13 @@ export const ExperienceDetails = ({ experience }: ExperienceDetailsProps) => {
       <div className="space-y-4 p-4">
         <ExperienceDetailsContent experience={experience} />
         <ExperienceDetailsHeader experience={experience} />
-        <ExperienceDetailsTags  experience={experience} />
+        <ExperienceDetailsTags experience={experience} />
         <ExperienceDetailsMeta experience={experience} />
         <ExperienceDetailsActionButtons experience={experience} />
-        <ExperienceDetailsAttendees experience={experience} />
+        <div className="border-y-2 border-neutral-200 py-4 dark:border-neutral-800">
+          <ExperienceDetailsAttendees experience={experience} />
+        </div>
+        <ExperienceDetailsLocation experience={experience} />
       </div>
     </Card>
   );
@@ -210,4 +215,23 @@ function ExperienceDetailsOwnerButtons({
       />
     </div>
   );
+}
+
+type ExperienceDetailsLocationProps = Pick<
+  ExperienceDetailsProps,
+  "experience"
+>;
+
+function ExperienceDetailsLocation({
+  experience,
+}: ExperienceDetailsLocationProps) {
+  const location = experience.location
+    ? (JSON.parse(experience.location) as LocationData)
+    : null;
+
+  if (!location) {
+    return null;
+  }
+
+  return <LocationDisplay location={location} />;
 }

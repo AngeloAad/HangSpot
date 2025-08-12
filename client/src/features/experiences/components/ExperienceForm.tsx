@@ -21,6 +21,7 @@ import Input from "@/features/shared/components/ui/Input";
 import { TextArea } from "@/features/shared/components/ui/TextArea";
 
 import { useExperienceMutations } from "../hooks/useExperienceMutations";
+import { LocationPicker } from "@/features/shared/components/LocationPicker";
 
 type ExperienceFormData = z.infer<typeof experienceValidationSchema>;
 
@@ -154,6 +155,20 @@ export function ExperienceForm({
                         field.onChange(event.target?.files?.[0]);
                       }}
                     />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Venue</FormLabel>
+                  <FormControl>
+                    <LocationPicker {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
