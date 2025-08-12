@@ -5,6 +5,9 @@ import { Experience, User } from "@advanced-react/server/database/schema";
 import { useParams, useSearch } from "@tanstack/react-router";
 
 type ExperienceMutationsOptions = {
+  add?: {
+    onSuccess?: (id: Experience["id"]) => void;
+  };
   edit?: {
     onSuccess?: (id: Experience["id"]) => void;
   };
@@ -26,6 +29,24 @@ export function useExperienceMutations(
   const { q: pathQ } = useSearch({ strict: false });
   const { tags: pathTags } = useSearch({ strict: false });
   const { scheduledAt: pathScheduledAt } = useSearch({ strict: false });
+
+  const addExperienceMutation = trpc.experiences.add.useMutation({
+    onSuccess: async ({ id }) => {
+      toast({
+        title: "Experience created",
+        description: "Your experience has been created successfully",
+      });
+
+      options.add?.onSuccess?.(id);
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to create experience",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
   const editExperienceMutation = trpc.experiences.edit.useMutation({
     onSuccess: async ({ id }) => {
@@ -55,7 +76,13 @@ export function useExperienceMutations(
           ? [utils.experiences.byUserId.invalidate({ id: pathUserId })]
           : []),
         ...(pathQ || pathTags || pathScheduledAt
-          ? [utils.experiences.search.invalidate({ q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt })]
+          ? [
+              utils.experiences.search.invalidate({
+                q: pathQ,
+                tags: pathTags,
+                scheduledAt: pathScheduledAt,
+              }),
+            ]
           : []),
         utils.users.byId.invalidate({}),
         utils.experiences.favorites.invalidate(),
@@ -107,7 +134,13 @@ export function useExperienceMutations(
           ? [utils.experiences.byUserId.cancel({ id: pathUserId })]
           : []),
         ...(pathQ || pathTags || pathScheduledAt
-          ? [utils.experiences.search.cancel({ q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt })]
+          ? [
+              utils.experiences.search.cancel({
+                q: pathQ,
+                tags: pathTags,
+                scheduledAt: pathScheduledAt,
+              }),
+            ]
           : []),
         utils.experiences.favorites.cancel(),
         ...(pathTagId
@@ -122,9 +155,14 @@ export function useExperienceMutations(
         byUserId: pathUserId
           ? utils.experiences.byUserId.getInfiniteData({ id: pathUserId })
           : undefined,
-        search: pathQ || pathTags || pathScheduledAt
-          ? utils.experiences.search.getInfiniteData({ q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt })
-          : undefined,
+        search:
+          pathQ || pathTags || pathScheduledAt
+            ? utils.experiences.search.getInfiniteData({
+                q: pathQ,
+                tags: pathTags,
+                scheduledAt: pathScheduledAt,
+              })
+            : undefined,
         favorites: utils.experiences.favorites.getInfiniteData(),
         byTagId: pathTagId
           ? utils.experiences.byTagId.getInfiniteData({ id: pathTagId })
@@ -178,21 +216,24 @@ export function useExperienceMutations(
       }
 
       if (pathQ || pathTags || pathScheduledAt) {
-        utils.experiences.search.setInfiniteData({ q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt }, (oldData) => {
-          if (!oldData) {
-            return;
-          }
+        utils.experiences.search.setInfiniteData(
+          { q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt },
+          (oldData) => {
+            if (!oldData) {
+              return;
+            }
 
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              experiences: page.experiences.map((e) =>
-                e.id === id ? updateExperience(e) : e,
-              ),
-            })),
-          };
-        });
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                experiences: page.experiences.map((e) =>
+                  e.id === id ? updateExperience(e) : e,
+                ),
+              })),
+            };
+          },
+        );
       }
 
       utils.experiences.favorites.setInfiniteData({}, (oldData) => {
@@ -297,7 +338,13 @@ export function useExperienceMutations(
           ? [utils.experiences.byUserId.cancel({ id: pathUserId })]
           : []),
         ...(pathQ || pathTags || pathScheduledAt
-          ? [utils.experiences.search.cancel({ q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt })]
+          ? [
+              utils.experiences.search.cancel({
+                q: pathQ,
+                tags: pathTags,
+                scheduledAt: pathScheduledAt,
+              }),
+            ]
           : []),
         utils.experiences.favorites.cancel(),
         ...(pathTagId
@@ -312,9 +359,14 @@ export function useExperienceMutations(
         byUserId: pathUserId
           ? utils.experiences.byUserId.getInfiniteData({ id: pathUserId })
           : undefined,
-        search: pathQ || pathTags || pathScheduledAt
-          ? utils.experiences.search.getInfiniteData({ q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt })
-          : undefined,
+        search:
+          pathQ || pathTags || pathScheduledAt
+            ? utils.experiences.search.getInfiniteData({
+                q: pathQ,
+                tags: pathTags,
+                scheduledAt: pathScheduledAt,
+              })
+            : undefined,
         favorites: utils.experiences.favorites.getInfiniteData(),
         byTagId: pathTagId
           ? utils.experiences.byTagId.getInfiniteData({ id: pathTagId })
@@ -368,21 +420,24 @@ export function useExperienceMutations(
       }
 
       if (pathQ || pathTags || pathScheduledAt) {
-        utils.experiences.search.setInfiniteData({ q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt }, (oldData) => {
-          if (!oldData) {
-            return;
-          }
+        utils.experiences.search.setInfiniteData(
+          { q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt },
+          (oldData) => {
+            if (!oldData) {
+              return;
+            }
 
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              experiences: page.experiences.map((e) =>
-                e.id === id ? updateExperience(e) : e,
-              ),
-            })),
-          };
-        });
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                experiences: page.experiences.map((e) =>
+                  e.id === id ? updateExperience(e) : e,
+                ),
+              })),
+            };
+          },
+        );
       }
 
       utils.experiences.favorites.setInfiniteData({}, (oldData) => {
@@ -481,7 +536,13 @@ export function useExperienceMutations(
           ? [utils.experiences.byUserId.cancel({ id: pathUserId })]
           : []),
         ...(pathQ || pathTags || pathScheduledAt
-          ? [utils.experiences.search.cancel({ q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt })]
+          ? [
+              utils.experiences.search.cancel({
+                q: pathQ,
+                tags: pathTags,
+                scheduledAt: pathScheduledAt,
+              }),
+            ]
           : []),
         ...(pathTagId
           ? [utils.experiences.byTagId.cancel({ id: pathTagId })]
@@ -495,9 +556,14 @@ export function useExperienceMutations(
         byUserId: pathUserId
           ? utils.experiences.byUserId.getInfiniteData({ id: pathUserId })
           : undefined,
-        search: pathQ || pathTags || pathScheduledAt
-          ? utils.experiences.search.getInfiniteData({ q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt })
-          : undefined,
+        search:
+          pathQ || pathTags || pathScheduledAt
+            ? utils.experiences.search.getInfiniteData({
+                q: pathQ,
+                tags: pathTags,
+                scheduledAt: pathScheduledAt,
+              })
+            : undefined,
         byTagId: pathTagId
           ? utils.experiences.byTagId.getInfiniteData({ id: pathTagId })
           : undefined,
@@ -550,21 +616,24 @@ export function useExperienceMutations(
       }
 
       if (pathQ || pathTags || pathScheduledAt) {
-        utils.experiences.search.setInfiniteData({ q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt }, (oldData) => {
-          if (!oldData) {
-            return;
-          }
+        utils.experiences.search.setInfiniteData(
+          { q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt },
+          (oldData) => {
+            if (!oldData) {
+              return;
+            }
 
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              experiences: page.experiences.map((e) =>
-                e.id === id ? updateExperience(e) : e,
-              ),
-            })),
-          };
-        });
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                experiences: page.experiences.map((e) =>
+                  e.id === id ? updateExperience(e) : e,
+                ),
+              })),
+            };
+          },
+        );
       }
 
       if (pathTagId) {
@@ -643,7 +712,13 @@ export function useExperienceMutations(
           ? [utils.experiences.byUserId.cancel({ id: pathUserId })]
           : []),
         ...(pathQ || pathTags || pathScheduledAt
-          ? [utils.experiences.search.cancel({ q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt })]
+          ? [
+              utils.experiences.search.cancel({
+                q: pathQ,
+                tags: pathTags,
+                scheduledAt: pathScheduledAt,
+              }),
+            ]
           : []),
         utils.experiences.favorites.cancel(),
         ...(pathTagId
@@ -658,9 +733,14 @@ export function useExperienceMutations(
         byUserId: pathUserId
           ? utils.experiences.byUserId.getInfiniteData({ id: pathUserId })
           : undefined,
-        search: pathQ || pathTags || pathScheduledAt
-          ? utils.experiences.search.getInfiniteData({ q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt })
-          : undefined,
+        search:
+          pathQ || pathTags || pathScheduledAt
+            ? utils.experiences.search.getInfiniteData({
+                q: pathQ,
+                tags: pathTags,
+                scheduledAt: pathScheduledAt,
+              })
+            : undefined,
         favorites: utils.experiences.favorites.getInfiniteData(),
         byTagId: pathTagId
           ? utils.experiences.byTagId.getInfiniteData({ id: pathTagId })
@@ -714,21 +794,24 @@ export function useExperienceMutations(
       }
 
       if (pathQ || pathTags || pathScheduledAt) {
-        utils.experiences.search.setInfiniteData({ q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt }, (oldData) => {
-          if (!oldData) {
-            return;
-          }
+        utils.experiences.search.setInfiniteData(
+          { q: pathQ, tags: pathTags, scheduledAt: pathScheduledAt },
+          (oldData) => {
+            if (!oldData) {
+              return;
+            }
 
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page) => ({
-              ...page,
-              experiences: page.experiences.map((e) =>
-                e.id === id ? updateExperience(e) : e,
-              ),
-            })),
-          };
-        });
+            return {
+              ...oldData,
+              pages: oldData.pages.map((page) => ({
+                ...page,
+                experiences: page.experiences.map((e) =>
+                  e.id === id ? updateExperience(e) : e,
+                ),
+              })),
+            };
+          },
+        );
       }
 
       utils.experiences.favorites.setInfiniteData({}, (oldData) => {
@@ -803,6 +886,7 @@ export function useExperienceMutations(
   });
 
   return {
+    addExperienceMutation,
     editExperienceMutation,
     deleteExperienceMutation,
     attendExperienceMutation,

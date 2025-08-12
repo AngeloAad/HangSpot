@@ -1,9 +1,19 @@
-import { Bell, Heart, Home, LogIn, Search, Settings, User } from "lucide-react";
+import {
+  Bell,
+  Heart,
+  Home,
+  LogIn,
+  Pencil,
+  Search,
+  Settings,
+  User,
+} from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import Link from "./ui/Link";
 import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 import { trpc } from "@/router";
 import { cn } from "@/lib/utils/cn";
+import { Button } from "./ui/Button";
 
 export default function Navigation() {
   const { currentUser } = useCurrentUser();
@@ -37,7 +47,7 @@ export default function Navigation() {
         <Search className="h-6 w-6" />
         Search
       </Link>
-      
+
       <Link
         to="/favorites"
         variant="ghost"
@@ -101,6 +111,21 @@ export default function Navigation() {
       )}
 
       <ThemeToggle />
+
+      {currentUser && (
+        <Button asChild>
+          <Link
+            to="/experiences/new"
+            params={{ userId: currentUser.id }}
+            variant="default"
+            className={cn(navLinkClassName, "!text-black dark:!text-black")}
+            activeProps={{ className: activeNavLinkClassName }}
+          >
+            <Pencil className="h-6 w-6" />
+            Create Experience
+          </Link>
+        </Button>
+      )}
     </nav>
   );
 }

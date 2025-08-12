@@ -18,26 +18,79 @@ type Venue = {
   lon: string;
 };
 
-type LocationPickerProps = {
-  value?: LocationData;
-  onChange: (location: LocationData | null) => void;
+type LocationSearchProps = {
+  onSearch: (query: string) => Promise<void>;
 };
 
-export function LocationPicker({ value, onChange }: LocationPickerProps) {
+function LocationSearch({ onSearch }: LocationSearchProps) {
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 500);
+
+  useEffect(() => {
+    if (debouncedSearch) {
+      onSearch(debouncedSearch);
+    }
+  }, [debouncedSearch, onSearch]);
+
+  return (
+    <RawInput
+      placeholder="Search location..."
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+    />
+  );
+}
+
+type SelectedLocationProps = {
+  name: string;
+  onClear: () => void;
+};
+
+function SelectedLocation({ name, onClear }: SelectedLocationProps) {
+  return (
+    <div className="div mb-4 space-y-2 rounded border border-neutral-100 p-2 dark:border-neutral-800">
+      <div>{name}</div>
+      <Button type="button" variant="destructive-link" onClick={onClear}>
+        Clear Location
+      </Button>
+    </div>
+  );
+}
+
+type VenueListProps = {
+  venues: Venue[];
+  onSelect: (venue: Venue) => void;
+};
+
+function VenueList({ venues, onSelect }: VenueListProps) {
+  return (
+    <ScrollArea className="h-[160px]">
+      <div className="space-y-2 pr-4">
+        {venues.map((venue, index) => (
+          <div
+            key={index}
+            className="cursor-pointer rounded border border-neutral-100 p-2 text-neutral-600 hover:bg-neutral-100 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800"
+            onClick={() => onSelect(venue)}
+          >
+            {venue.display_name}
+          </div>
+        ))}
+      </div>
+    </ScrollArea>
+  );
+}
+
+export function LocationPicker({ value, onChange }: { value?: LocationData; onChange: (location: LocationData | null) => void; }) {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [zoom, setZoom] = useState(value ? 18 : 13);
   const [center, setCenter] = useState<LatLngTuple>(
-    value
-      ? [value.lat, value.lon]
-      : [DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lon],
+    value ? [value.lat, value.lon] : [DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lon],
   );
 
   async function handleSearch(query: string) {
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          query,
-        )}`,
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`,
       );
 
       if (!response.ok) {
@@ -86,74 +139,9 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
         )}
       </div>
       <LocationDisplay
-        location={{
-          lat: center[0],
-          lon: center[1],
-        }}
+        location={{ lat: center[0], lon: center[1] }}
         zoom={zoom}
       />
     </div>
   );
-
-  type LocationSearchProps = {
-    onSearch: (query: string) => Promise<void>;
-  };
-
-  function LocationSearch({ onSearch }: LocationSearchProps) {
-    const [search, setSearch] = useState("");
-    const debouncedSearch = useDebounce(search, 500);
-
-    useEffect(() => {
-      if (debouncedSearch) {
-        onSearch(debouncedSearch);
-      }
-    }, [debouncedSearch, onSearch]);
-
-    return (
-      <RawInput
-        placeholder="Search location..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-    );
-  }
-
-  type SelectedLocationProps = {
-    name: string;
-    onClear: () => void;
-  };
-
-  function SelectedLocation({ name, onClear }: SelectedLocationProps) {
-    return (
-      <div className="div mb-4 space-y-2 rounded border border-neutral-100 p-2 dark:border-neutral-800">
-        <div>{name}</div>
-        <Button type="button" variant="destructive-link" onClick={onClear}>
-          Clear Location
-        </Button>
-      </div>
-    );
-  }
-
-  type VenueListProps = {
-    venues: Venue[];
-    onSelect: (venue: Venue) => void;
-  };
-
-  function VenueList({ venues, onSelect }: VenueListProps) {
-    return (
-      <ScrollArea className="h-[160px]">
-        <div className="space-y-2 pr-4">
-          {venues.map((venue, index) => (
-            <div
-              key={index}
-              className="cursor-pointer rounded border border-neutral-100 p-2 text-neutral-600 hover:bg-neutral-100 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800"
-              onClick={() => onSelect(venue)}
-            >
-              {venue.display_name}
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
-    );
-  }
 }
