@@ -3,6 +3,7 @@ import { useToast } from "@/features/shared/hooks/useToast";
 import { trpc } from "@/router";
 import { Experience, User } from "@advanced-react/server/database/schema";
 import { useParams, useSearch } from "@tanstack/react-router";
+import { error } from "console";
 
 type ExperienceMutationsOptions = {
   add?: {
@@ -12,6 +13,9 @@ type ExperienceMutationsOptions = {
     onSuccess?: (id: Experience["id"]) => void;
   };
   delete?: {
+    onSuccess?: (id: Experience["id"]) => void;
+  };
+  kick?: {
     onSuccess?: (id: Experience["id"]) => void;
   };
 };
@@ -885,6 +889,61 @@ export function useExperienceMutations(
     },
   });
 
+  const kickExperienceMutation = trpc.experiences.kickAttendee.useMutation({
+    onMutate: async ({ experienceId, userId }) => {
+      // STEP 1
+      await utils.users.experienceAttendees.cancel({ experienceId });
+
+      // STEP 2
+      const previousData = {
+        experienceAttendees: utils.users.experienceAttendees.getInfiniteData({
+          experienceId,
+        }),
+      };
+
+      // STEP 3
+      utils.users.experienceAttendees.setInfiniteData(
+        { experienceId },
+        (oldData) => {
+          if (!oldData) {
+            return;
+          }
+
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              attendees: page.attendees.filter((a) => a.id !== userId),
+              attendeesCount: Math.max(0, page.attendeesCount - 1),
+            })),
+          };
+        },
+      );
+
+      toast({
+        title: "Attendee Kicked",
+        description: "The attendee has been kicked from the experience",
+      });
+
+      return { previousData };
+    },
+    onSuccess: (_, { experienceId }) => {
+      options.kick?.onSuccess?.(experienceId);
+    },
+    onError: (error, { experienceId }, context) => {
+      utils.users.experienceAttendees.setInfiniteData(
+        { experienceId },
+        context?.previousData.experienceAttendees,
+      );
+
+      toast({
+        title: "Failed to kick attendee",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   return {
     addExperienceMutation,
     editExperienceMutation,
@@ -893,5 +952,6 @@ export function useExperienceMutations(
     unattendExperienceMutation,
     favoriteExperienceMutation,
     unfavoriteExperienceMutation,
+    kickExperienceMutation,
   };
 }
