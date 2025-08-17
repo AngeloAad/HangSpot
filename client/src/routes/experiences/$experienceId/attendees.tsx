@@ -74,6 +74,7 @@ function ExperienceAttendeesPage() {
                     experienceId={experience.id}
                     userId={user.id}
                   />
+                  
                 )}
               </div>
             )}

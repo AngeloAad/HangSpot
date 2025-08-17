@@ -117,7 +117,7 @@ export default function Navigation() {
           <Link
             to="/experiences/new"
             params={{ userId: currentUser.id }}
-            variant="default"
+            variant="ghost"
             className={cn(navLinkClassName, "!text-black dark:!text-black")}
             activeProps={{ className: activeNavLinkClassName }}
           >

@@ -62,13 +62,14 @@ export function CommentCreateForm({ experience }: CommentCreateFormProps) {
         experience,
         userId: currentUser.id,
         user: currentUser,
+        isLiked: false,
+        likesCount: 0,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
 
       utils.comments.byExperienceId.setData(
         { experienceId: experience.id },
-        // @ts-expect-error - TODO: fix when implementing liking comments
         (oldData) => {
           const currentComments = oldData ?? [];
           return [optimisticComment, ...currentComments];
