@@ -3,7 +3,6 @@ import { useToast } from "@/features/shared/hooks/useToast";
 import { trpc } from "@/router";
 import { Experience, User } from "@advanced-react/server/database/schema";
 import { useParams, useSearch } from "@tanstack/react-router";
-import { error } from "console";
 
 type ExperienceMutationsOptions = {
   add?: {

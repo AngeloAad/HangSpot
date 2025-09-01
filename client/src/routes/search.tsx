@@ -1,4 +1,4 @@
-import { trpc, trpcQueryUtils } from "@/router";
+import { trpc } from "@/router";
 import { createFileRoute } from "@tanstack/react-router";
 import { experienceFiltersSchema } from "@advanced-react/shared/schema/experience";
 
